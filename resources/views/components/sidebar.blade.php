@@ -5,33 +5,28 @@
                 <li class="menu-title">
                     <span>Main Menu</span>
                 </li>
-                <li class="submenu active">
-                    <a href="#"><i class="feather-grid"></i> <span> Dashboard</span> <span
-                            class="menu-arrow"></span></a>
-                    <ul>
-                        @hasrole('admin')
+                @hasrole('admin|hr')
+                    <li class="submenu active">
+                        <a href="#"><i class="feather-grid"></i> <span> Dashboard</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul>
                             <li><a href="index.html">Admin Dashboard</a></li>
                             <li><a href="teacher-dashboard.html">Teacher Dashboard</a></li>
                             <li><a href="student-dashboard.html">Student Dashboard</a></li>
-                        @endhasrole
 
-                        @hasrole('hr')
                             <li><a href="teacher-dashboard.html">Teacher Dashboard</a></li>
-                        @endhasrole
 
-                        @hasrole('employee')
                             <li><a href="student-dashboard.html">Student Dashboard</a></li>
-                        @endhasrole
-                    </ul>
-                </li>
+                        </ul>
+                    </li>
+                @endhasrole
                 @hasrole('admin|hr')
                     <li class="submenu">
-                        <a href="#"><i class="fas fa-building"></i> <span> Departments</span> <span
-                                class="menu-arrow"></span></a>
+                        <a href="#"><i class="fas fa-building"></i> <span> Departments</span>
+                            <span class="menu-arrow"></span></a>
                         <ul>
-                            <li><a href="departments.html">Department List</a></li>
-                            <li><a href="add-department.html">Department Add</a></li>
-                            <li><a href="edit-department.html">Department Edit</a></li>
+                            <li><a href="{{ route('show.aqua.department') }}">Aqua Department</a></li>
+                            <li><a href="teacher-dashboard.html">Laminin Department</a></li>
                         </ul>
                     </li>
                 @endhasrole
@@ -97,30 +92,30 @@
                     </li>
                 @endhasrole
                 @hasrole('admin|hr|employee')
-                <li class="submenu">
-                    <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span> Loan</span> <span
-                            class="menu-arrow"></span></a>
-                    <ul>
-                        <li><a href="fees-collections.html">Fees Collection</a></li>
-                        <li><a href="expenses.html">Expenses</a></li>
-                        <li><a href="salary.html">Salary</a></li>
-                        <li><a href="add-fees-collection.html">Add Fees</a></li>
-                        <li><a href="add-expenses.html">Add Expenses</a></li>
-                        <li><a href="add-salary.html">Add Salary</a></li>
-                    </ul>
-                </li>
+                    <li class="submenu">
+                        <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span> Loan</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul>
+                            <li><a href="fees-collections.html">Fees Collection</a></li>
+                            <li><a href="expenses.html">Expenses</a></li>
+                            <li><a href="salary.html">Salary</a></li>
+                            <li><a href="add-fees-collection.html">Add Fees</a></li>
+                            <li><a href="add-expenses.html">Add Expenses</a></li>
+                            <li><a href="add-salary.html">Add Salary</a></li>
+                        </ul>
+                    </li>
                 @endhasrole
                 @hasrole('admin|hr')
-                <li class="submenu">
-                    <a href="#"><i class="fas fa-users"></i> <span> Assets</span> <span
-                            class="menu-arrow"></span></a>
-                    <ul>
-                        <li><a href="students.html">Student List</a></li>
-                        <li><a href="student-details.html">Student View</a></li>
-                        <li><a href="add-student.html">Student Add</a></li>
-                        <li><a href="edit-student.html">Student Edit</a></li>
-                    </ul>
-                </li>
+                    <li class="submenu">
+                        <a href="#"><i class="fas fa-users"></i> <span> Assets</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul>
+                            <li><a href="students.html">Student List</a></li>
+                            <li><a href="student-details.html">Student View</a></li>
+                            <li><a href="add-student.html">Student Add</a></li>
+                            <li><a href="edit-student.html">Student Edit</a></li>
+                        </ul>
+                    </li>
                 @endhasrole
                 <li class="submenu">
                     <a href="#"><i class="fas fa-users"></i> <span> Notice</span> <span
@@ -139,3 +134,29 @@
         </div>
     </div>
 </div>
+
+{{-- @push('js')
+    <script>
+        new Vue({
+            el: '#listOfDepartment', // Use class instead of ID
+            data: {
+                departments: [],
+            },
+            mounted() {
+                this.departmentList();
+            },
+            methods: {
+                departmentList() {
+                    axios.get('/department-list')
+                        .then(response => {
+                            this.departments = response.data;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching departments', error.response ? error.response.data :
+                                error);
+                        });
+                }
+            }
+        });
+    </script>
+@endpush --}}

@@ -5,4 +5,6 @@
 <script src="{{ asset('admin/assets/plugins/apexchart/apexcharts.min.js') }}"></script>
 <script src="{{ asset('admin/assets/plugins/apexchart/chart-data.js') }}"></script>
 <script src="{{ asset('admin/assets/js/script.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script> <!-- Include this para mo work ang vue -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Include this para mo work ang axios -->
 @stack('js')
