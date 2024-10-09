@@ -89,7 +89,7 @@
         new Vue({
             el: '#storeEmployee',
             data: {
-                department_id: 1,
+                department_id: 2,
                 name: '',
                 email: '',
                 address: '',
@@ -111,7 +111,7 @@
                         }
                     });
 
-                    axios.post('{{ route('aqua.store.employee') }}', {
+                    axios.post("{{ route('laminin.store.employee') }}", {
                             department_id: this.department_id,
                             name: this.name,
                             email: this.email,
@@ -129,7 +129,7 @@
                                 allowOutsideClick: false,
                                 allowEscapeKey: false,
                             }).then(() => {
-                                window.location.href = `/aqua/employee/list`;
+                                window.location.href = `/laminin/employee/list`;
                             });
                         })
                         .catch(error => {

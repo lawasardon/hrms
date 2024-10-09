@@ -111,7 +111,7 @@
                         }
                     });
 
-                    axios.post('{{ route('aqua.store.employee') }}', {
+                    axios.post("{{ route('aqua.store.employee') }}", {
                             department_id: this.department_id,
                             name: this.name,
                             email: this.email,

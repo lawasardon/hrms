@@ -31,11 +31,13 @@
                                     Aqua Department
                                 </a>
                             </li>
-                            <li><a href="teacher-dashboard.html">Laminin Department</a></li>
+                            <li><a href="{{ route('show.laminin.employee.list') }}"
+                                    class="{{ request()->routeIs('show.laminin.employee.list') ? 'active' : '' }}">Laminin
+                                    Department</a></li>
                         </ul>
                     </li>
                 @endhasrole
-                @hasrole('admin|hr')
+                {{-- @hasrole('admin|hr')
                     <li class="submenu">
                         <a href="#"><i class="fas fa-users"></i> <span> Employees</span> <span
                                 class="menu-arrow"></span></a>
@@ -46,7 +48,7 @@
                             <li><a href="edit-student.html">Student Edit</a></li>
                         </ul>
                     </li>
-                @endhasrole
+                @endhasrole --}}
                 @hasrole('admin|hr|employee')
                     <li class="submenu">
                         <a href="#"><i class="far fa-calendar-check"></i> <span> Attedance</span> <span
@@ -139,4 +141,3 @@
         </div>
     </div>
 </div>
-

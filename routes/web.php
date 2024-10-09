@@ -33,6 +33,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/aqua/employee/list/data', [DepartmentController::class, 'aquaEmployeeListData'])->name('aqua.employee.list.data');
         Route::get('/aqua/add/employee', [DepartmentController::class, 'aquaAddEmployee'])->name('aqua.add.employee');
         Route::post('/aqua/store/employee', [DepartmentController::class, 'aquaStoreEmployee'])->name('aqua.store.employee');
+
+        Route::get('/laminin/employee/list', [DepartmentController::class, 'showLamininEmployeeList'])->name('show.laminin.employee.list');
+        Route::get('/laminin/employee/list/data', [DepartmentController::class, 'lamininEmployeeListData'])->name('laminin.employee.list.data');
+        Route::get('/laminin/add/employee', [DepartmentController::class, 'lamininAddEmployee'])->name('laminin.add.employee');
+        Route::post('/laminin/store/employee', [DepartmentController::class, 'lamininStoreEmployee'])->name('laminin.store.employee');
+
     });
 
     Route::group(['middleware' => ['role:admin|employee']], function () {

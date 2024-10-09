@@ -6,10 +6,10 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-sub-header">
-                        <h3 class="page-title">Students</h3>
+                        <h3 class="page-title">Aqua Department</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="students.html">Student</a></li>
-                            <li class="breadcrumb-item active">All Students</li>
+                            <li class="breadcrumb-item"><a href="students.html">Aqua Department</a></li>
+                            <li class="breadcrumb-item active">All Employees</li>
                         </ul>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         <div class="page-header">
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <h3 class="page-title">Students</h3>
+                                    <h3 class="page-title">Employees</h3>
                                 </div>
                                 <div class="col-auto text-end float-end ms-auto download-grp">
                                     <a href="students.html" class="btn btn-outline-gray me-2 active"><i
@@ -137,10 +137,10 @@
                 employeeList: [],
             },
             mounted() {
-                this.departmentList();
+                this.allEmployeeOfAqua();
             },
             methods: {
-                departmentList() {
+                allEmployeeOfAqua() {
                     axios.get("{{ route('aqua.employee.list.data') }}")
                         .then(response => {
                             this.employeeList = response.data;

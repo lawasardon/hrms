@@ -1,15 +1,15 @@
 @extends('layouts.main')
 @section('content')
-    <div class="content container-fluid" id="aquaEmployeeList">
+    <div class="content container-fluid" id="lamininEmployeeList">
 
         <div class="page-header">
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-sub-header">
-                        <h3 class="page-title">Students</h3>
+                        <h3 class="page-title">Laminin Department</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="students.html">Student</a></li>
-                            <li class="breadcrumb-item active">All Students</li>
+                            <li class="breadcrumb-item"><a href="students.html">Laminin Department</a></li>
+                            <li class="breadcrumb-item active">All Employees</li>
                         </ul>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         <div class="page-header">
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <h3 class="page-title">Students</h3>
+                                    <h3 class="page-title">Employees</h3>
                                 </div>
                                 <div class="col-auto text-end float-end ms-auto download-grp">
                                     <a href="students.html" class="btn btn-outline-gray me-2 active"><i
@@ -58,7 +58,7 @@
                                             class="feather-grid"></i></a>
                                     <a href="#" class="btn btn-outline-primary me-2"><i class="fas fa-download"></i>
                                         Download</a>
-                                    <a href="{{ route('aqua.add.employee') }}" class="btn btn-primary"><i
+                                    <a href="{{ route('laminin.add.employee') }}" class="btn btn-primary"><i
                                             class="fas fa-plus"></i></a>
                                 </div>
                             </div>
@@ -132,16 +132,16 @@
 @push('js')
     <script>
         new Vue({
-            el: '#aquaEmployeeList',
+            el: '#lamininEmployeeList',
             data: {
                 employeeList: [],
             },
             mounted() {
-                this.departmentList();
+                this.allEmployeeOfLaminin();
             },
             methods: {
-                departmentList() {
-                    axios.get("{{ route('aqua.employee.list.data') }}")
+                allEmployeeOfLaminin() {
+                    axios.get("{{ route('laminin.employee.list.data') }}")
                         .then(response => {
                             this.employeeList = response.data;
                         })
