@@ -29,7 +29,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/hrindex', function () {
             return view('index');
         });
-        Route::get('/aqua/department', [DepartmentController::class, 'showAquaDepartment'])->name('show.aqua.department');
+        Route::get('/aqua/employee/list', [DepartmentController::class, 'showAquaEmployeeList'])->name('show.aqua.employee.list');
+        Route::get('/aqua/employee/list/data', [DepartmentController::class, 'aquaEmployeeListData'])->name('aqua.employee.list.data');
         Route::get('/aqua/add/employee', [DepartmentController::class, 'aquaAddEmployee'])->name('aqua.add.employee');
         Route::post('/aqua/store/employee', [DepartmentController::class, 'aquaStoreEmployee'])->name('aqua.store.employee');
     });

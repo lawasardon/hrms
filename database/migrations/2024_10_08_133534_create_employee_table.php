@@ -16,7 +16,7 @@ class CreateEmployeeTable extends Migration
         Schema::create('employee', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('department')->nullable();
+            $table->unsignedBigInteger('department_id')->nullable();
             $table->string('name');
             $table->string('email')->unique();
             $table->string('address')->nullable();
@@ -28,7 +28,7 @@ class CreateEmployeeTable extends Migration
 
             // Foreign key constraints
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('department')->references('id')->on('department')->onDelete('cascade');
+            $table->foreign('department_id')->references('id')->on('department')->onDelete('cascade');
         });
     }
 

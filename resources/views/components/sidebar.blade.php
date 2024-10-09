@@ -25,7 +25,12 @@
                         <a href="#"><i class="fas fa-building"></i> <span> Departments</span>
                             <span class="menu-arrow"></span></a>
                         <ul>
-                            <li><a href="{{ route('show.aqua.department') }}">Aqua Department</a></li>
+                            <li>
+                                <a href="{{ route('show.aqua.employee.list') }}"
+                                    class="{{ request()->routeIs('show.aqua.employee.list') ? 'active' : '' }}">
+                                    Aqua Department
+                                </a>
+                            </li>
                             <li><a href="teacher-dashboard.html">Laminin Department</a></li>
                         </ul>
                     </li>
@@ -135,28 +140,3 @@
     </div>
 </div>
 
-{{-- @push('js')
-    <script>
-        new Vue({
-            el: '#listOfDepartment', // Use class instead of ID
-            data: {
-                departments: [],
-            },
-            mounted() {
-                this.departmentList();
-            },
-            methods: {
-                departmentList() {
-                    axios.get('/department-list')
-                        .then(response => {
-                            this.departments = response.data;
-                        })
-                        .catch(error => {
-                            console.error('Error fetching departments', error.response ? error.response.data :
-                                error);
-                        });
-                }
-            }
-        });
-    </script>
-@endpush --}}

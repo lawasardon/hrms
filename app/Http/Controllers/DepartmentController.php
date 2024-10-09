@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 
 class DepartmentController extends Controller
 {
-    public function showAquaDepartment()
+    public function showAquaEmployeeList()
     {
         return view('department.aqua.index');
     }
@@ -24,7 +24,7 @@ class DepartmentController extends Controller
     public function aquaStoreEmployee(Request $request)
     {
         $validatedData = $request->validate([
-            'department' => 'required|integer',
+            'department_id' => 'required|integer',
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:employee,email',
             'address' => 'required|string|max:255',
@@ -53,5 +53,12 @@ class DepartmentController extends Controller
         Mail::to($validatedData['email'])->send(new EmployeeAccountCreated($employee, $password));
 
         return response()->json(['message' => 'Employee added successfully', 'employee' => $employee], 201);
+    }
+
+    public function aquaEmployeeListData()
+    {
+        $employeeList = Employee::with('department')->where('department_id', 1)->get();
+
+        return response()->json($employeeList);
     }
 }
