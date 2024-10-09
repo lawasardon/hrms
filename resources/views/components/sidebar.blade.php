@@ -34,6 +34,12 @@
                             <li><a href="{{ route('show.laminin.employee.list') }}"
                                     class="{{ request()->routeIs('show.laminin.employee.list') ? 'active' : '' }}">Laminin
                                     Department</a></li>
+                            @if (request()->is('laminin/add/employee','aqua/add/employee'))
+                                <li><a href="#" class="{{ request()->is('laminin/add/employee','aqua/add/employee') ? 'active' : '' }}">Add
+                                        Employee</a>
+                                </li>
+                            @else
+                            @endif
                         </ul>
                     </li>
                 @endhasrole

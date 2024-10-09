@@ -37,4 +37,17 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    protected function authenticated($request, $user)
+    {
+        if ($user->hasRole('employee')) {
+            return redirect('/emindex');
+        } elseif ($user->hasRole('hr')) {
+            return redirect('/hrindex');
+        } elseif ($user->hasRole('admin')) {
+            return redirect('/index');
+        }
+
+        return redirect($this->redirectTo);
+    }
 }
