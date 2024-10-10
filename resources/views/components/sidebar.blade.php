@@ -6,7 +6,7 @@
                     <span>Main Menu</span>
                 </li>
                 @hasrole('admin|hr')
-                    <li class="submenu active">
+                    <li class="submenu {{ request()->routeIs('') ? 'active' : '' }}">
                         <a href="#"><i class="feather-grid"></i> <span> Dashboard</span> <span
                                 class="menu-arrow"></span></a>
                         <ul>
@@ -21,7 +21,16 @@
                     </li>
                 @endhasrole
                 @hasrole('admin|hr')
-                    <li class="submenu">
+                    <li
+                        class="submenu
+                        {{ request()->routeIs(
+                            'show.aqua.employee.list',
+                            'show.laminin.employee.list',
+                            'laminin.add.employee',
+                            'aqua.add.employee',
+                        )
+                            ? 'active'
+                            : '' }}">
                         <a href="#"><i class="fas fa-building"></i> <span> Departments</span>
                             <span class="menu-arrow"></span></a>
                         <ul>
@@ -34,8 +43,9 @@
                             <li><a href="{{ route('show.laminin.employee.list') }}"
                                     class="{{ request()->routeIs('show.laminin.employee.list') ? 'active' : '' }}">Laminin
                                     Department</a></li>
-                            @if (request()->is('laminin/add/employee','aqua/add/employee'))
-                                <li><a href="#" class="{{ request()->is('laminin/add/employee','aqua/add/employee') ? 'active' : '' }}">Add
+                            @if (request()->is('laminin/add/employee', 'aqua/add/employee'))
+                                <li><a href="#"
+                                        class="{{ request()->is('laminin/add/employee', 'aqua/add/employee') ? 'active' : '' }}">Add
                                         Employee</a>
                                 </li>
                             @else
@@ -68,14 +78,16 @@
                     </li>
                 @endhasrole
                 @hasrole('admin|hr|employee')
-                    <li class="submenu">
+                    <li class="submenu {{ request()->routeIs('aqua.leave.list') ? 'active' : '' }}">
                         <a href="#"><i class="fas fa-user-slash"></i> <span> Leave</span> <span
                                 class="menu-arrow"></span></a>
                         <ul>
-                            <li><a href="teachers.html">Teacher List</a></li>
-                            <li><a href="teacher-details.html">Teacher View</a></li>
-                            <li><a href="add-teacher.html">Teacher Add</a></li>
-                            <li><a href="edit-teacher.html">Teacher Edit</a></li>
+                            <li><a href="{{ route('aqua.leave.list') }}"
+                                    class="{{ request()->routeIs('aqua.leave.list') ? 'active' : '' }}">Aqua
+                                    Leave List</a></li>
+                            <li><a href="teacher-details.html">Laminin Leave List</a></li>
+                            {{-- <li><a href="add-teacher.html">Teacher Add</a></li>
+                            <li><a href="edit-teacher.html">Teacher Edit</a></li> --}}
                         </ul>
                     </li>
                 @endhasrole
