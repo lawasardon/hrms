@@ -17,4 +17,10 @@ class Department extends Model
     {
         return $this->hasMany(Employee::class);
     }
+
+    public function leave()
+    {
+        return $this->hasMany(Leave::class);
+    }
+
 }

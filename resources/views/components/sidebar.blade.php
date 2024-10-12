@@ -77,7 +77,7 @@
                         </ul>
                     </li>
                 @endhasrole
-                @hasrole('admin|hr|employee')
+                @hasrole('admin|hr')
                     <li class="submenu {{ request()->routeIs('aqua.leave.list') ? 'active' : '' }}">
                         <a href="#"><i class="fas fa-user-slash"></i> <span> Leave</span> <span
                                 class="menu-arrow"></span></a>
@@ -88,6 +88,24 @@
                             <li><a href="teacher-details.html">Laminin Leave List</a></li>
                             {{-- <li><a href="add-teacher.html">Teacher Add</a></li>
                             <li><a href="edit-teacher.html">Teacher Edit</a></li> --}}
+                        </ul>
+                    </li>
+                @endhasrole
+                @hasrole('employee')
+                    <li
+                        class="submenu {{ request()->routeIs('employee.leave.list', 'employee.leave.create') ? 'active' : '' }}">
+                        <a href="#"><i class="fas fa-user-slash"></i> <span> Leave</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul>
+                            <li><a href="{{ route('employee.leave.list') }}"
+                                    class="{{ request()->routeIs('employee.leave.list') ? 'active' : '' }}">Leave Form</a>
+                            </li>
+                            @if (request()->is('leave/create'))
+                                <li><a href="#" class="{{ request()->is('leave/create') ? 'active' : '' }}">File
+                                        Leave</a>
+                                </li>
+                            @else
+                            @endif
                         </ul>
                     </li>
                 @endhasrole

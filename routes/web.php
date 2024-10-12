@@ -41,6 +41,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/laminin/store/employee', [DepartmentController::class, 'lamininStoreEmployee'])->name('laminin.store.employee');
 
         Route::get('/aqua/leave/list', [LeaveController::class, 'aquaLeaveList'])->name('aqua.leave.list');
+        Route::get('/aqua/leave/list/data', [LeaveController::class, 'aquaLeaveListData'])->name('aqua.leave.list.data');
+        Route::post('/aqua/leave/list/update/{id}', [LeaveController::class, 'aquaLeaveListUpdate'])->name('aqua.leave.list.update');
 
 
     });
@@ -49,5 +51,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/emindex', function () {
             return view('index');
         });
+        Route::get('/leave/list', [LeaveController::class, 'leaveList'])->name('employee.leave.list');
+        Route::get('/leave/list/data', [LeaveController::class, 'leaveListData'])->name('employee.leave.list.data');
+        Route::get('/leave/create', [LeaveController::class, 'createLeave'])->name('employee.leave.create');
+        Route::post('/leave/store', [LeaveController::class, 'storeLeave'])->name('employee.leave.store');
+
     });
 });

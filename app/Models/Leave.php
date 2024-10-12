@@ -10,4 +10,28 @@ class Leave extends Model
     use HasFactory;
 
     protected $table = 'leave';
+
+    protected $fillable = [
+        'user_id',
+        'department_id',
+        'date_filed',
+        'name',
+        'date_start',
+        'date_end',
+        'type_of_day',
+        'type_of_leave',
+        'reason_to_leave',
+        'status',
+    ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }
