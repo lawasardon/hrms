@@ -78,16 +78,16 @@
                     </li>
                 @endhasrole
                 @hasrole('admin|hr')
-                    <li class="submenu {{ request()->routeIs('aqua.leave.list') ? 'active' : '' }}">
+                    <li class="submenu {{ request()->routeIs('aqua.leave.list', 'laminin.leave.list') ? 'active' : '' }}">
                         <a href="#"><i class="fas fa-user-slash"></i> <span> Leave</span> <span
                                 class="menu-arrow"></span></a>
                         <ul>
                             <li><a href="{{ route('aqua.leave.list') }}"
                                     class="{{ request()->routeIs('aqua.leave.list') ? 'active' : '' }}">Aqua
                                     Leave List</a></li>
-                            <li><a href="teacher-details.html">Laminin Leave List</a></li>
-                            {{-- <li><a href="add-teacher.html">Teacher Add</a></li>
-                            <li><a href="edit-teacher.html">Teacher Edit</a></li> --}}
+                            <li><a href="{{ route('laminin.leave.list') }}"
+                                    class="{{ request()->routeIs('laminin.leave.list') ? 'active' : '' }}">Laminin Leave
+                                    List</a></li>
                         </ul>
                     </li>
                 @endhasrole

@@ -4,12 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Leave;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveController extends Controller
 {
     public function aquaLeaveList()
     {
         return view('leave.aqua.index');
+    }
+
+    public function lamininLeaveList()
+    {
+        return view('leave.laminin.index');
     }
 
     public function aquaLeaveListData()
@@ -19,6 +25,15 @@ class LeaveController extends Controller
             ->get();
 
         return response()->json($aquaLeaveList);
+    }
+
+    public function lamininLeaveListData()
+    {
+        $lamininLeaveList = Leave::with('department')
+            ->where('department_id', 2)
+            ->get();
+
+        return response()->json($lamininLeaveList);
     }
 
     public function aquaLeaveListUpdate(Request $request, $id)
@@ -33,30 +48,24 @@ class LeaveController extends Controller
         return response()->json(['message' => 'Leave submitted successfully', 'employee' => $leave], 200);
     }
 
+    public function lamininLeaveListUpdate(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'status' => 'required|string',
+        ]);
+
+        $leave = Leave::findOrFail($id);
+        $leave->update($validatedData);
+
+        return response()->json(['message' => 'Leave submitted successfully', 'employee' => $leave], 200);
+    }
 
     public function leaveList()
     {
         return view('leave.employee.index');
     }
 
-    // public function leaveListData()
-    // {
-    //     $employee = auth()->user()->employee;
-
-    //     if ($employee) {
-    //         $departmentId = $employee->department_id;
-
-    //         $leave = Leave::with('department')
-    //             ->where('department_id', $departmentId)
-    //             ->where('user_id', auth()->id())
-    //             ->get();
-
-    //         return response()->json($leave);
-    //     }
-
-    //     return response()->json([]);
-    // }
-
+    //EMPLOYEE
     public function leaveListData()
     {
         $leave = Leave::with('department')
@@ -66,6 +75,11 @@ class LeaveController extends Controller
         return response()->json($leave);
     }
 
+    public function getDepartmentIdData()
+    {
+        $departmentId = Auth::user()->employee->department_id;
+        return response()->json($departmentId);
+    }
 
     public function createLeave()
     {

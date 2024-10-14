@@ -99,7 +99,8 @@
         new Vue({
             el: '#storeLeave',
             data: {
-                department_id: 1,
+                myDepartment: null,
+                department_id: null,
                 name: '',
                 date_filed: new Date().toISOString().split('T')[0],
                 date_start: '',
@@ -109,7 +110,24 @@
                 reason_to_leave: '',
                 status: 'pending',
             },
+
+            mounted() {
+                this.getDepartmentId();
+            },
+
             methods: {
+                getDepartmentId() {
+                    axios.get("{{ route('employee.get.department.id.data') }}")
+                        .then(response => {
+                            this.myDepartment = response.data;
+                            this.department_id = this.myDepartment; // Assign fetched value to department_id
+                        })
+                        .catch(error => {
+                            console.error('Error fetching department ID', error.response ? error.response.data :
+                                error);
+                        });
+                },
+
                 submitLeave() {
                     Swal.fire({
                         title: 'Processing...',
@@ -155,7 +173,7 @@
                                 allowEscapeKey: false,
                             });
                         });
-                }
+                },
             }
         });
     </script>

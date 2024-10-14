@@ -44,6 +44,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/aqua/leave/list/data', [LeaveController::class, 'aquaLeaveListData'])->name('aqua.leave.list.data');
         Route::post('/aqua/leave/list/update/{id}', [LeaveController::class, 'aquaLeaveListUpdate'])->name('aqua.leave.list.update');
 
+        Route::get('/laminin/leave/list', [LeaveController::class, 'lamininLeaveList'])->name('laminin.leave.list');
+        Route::get('/laminin/leave/list/data', [LeaveController::class, 'lamininLeaveListData'])->name('laminin.leave.list.data');
+        Route::post('/laminin/leave/list/update/{id}', [LeaveController::class, 'lamininLeaveListUpdate'])->name('laminin.leave.list.update');
 
     });
 
@@ -53,6 +56,7 @@ Route::group(['middleware' => ['auth']], function () {
         });
         Route::get('/leave/list', [LeaveController::class, 'leaveList'])->name('employee.leave.list');
         Route::get('/leave/list/data', [LeaveController::class, 'leaveListData'])->name('employee.leave.list.data');
+        Route::get('/get/department/id/data', [LeaveController::class, 'getDepartmentIdData'])->name('employee.get.department.id.data');
         Route::get('/leave/create', [LeaveController::class, 'createLeave'])->name('employee.leave.create');
         Route::post('/leave/store', [LeaveController::class, 'storeLeave'])->name('employee.leave.store');
 

@@ -1,21 +1,21 @@
 @extends('layouts.main')
 
 @section('content')
-    <div class="content container-fluid" id="allAquaLeaveList">
+    <div class="content container-fluid" id="allLamininLeaveList">
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="page-title">Aqua Leave List Details</h3>
+                    <h3 class="page-title">Laminin Leave List Details</h3>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Aqua Leave List</li>
+                        <li class="breadcrumb-item active">Laminin Leave List</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <x-modal submitMethod="updateLeaveStatus" modalId="editModalLeaveList" title="Aqua Leave List" submitId="submitEdit"
-            submitText="Save Changes">
+        <x-modal submitMethod="updateLeaveStatus" modalId="editModalLeaveList" title="Laminin Leave List"
+            submitId="submitEdit" submitText="Save Changes">
             <form>
                 <div class="form-group">
                     <label class="col-form-label">Date Filed:</label>
@@ -117,7 +117,7 @@
 @push('js')
     <script>
         new Vue({
-            el: '#allAquaLeaveList',
+            el: '#allLamininLeaveList',
             data: {
                 leaveList: [],
                 currentLeave: {
@@ -135,7 +135,7 @@
             },
             methods: {
                 allLeaveList() {
-                    axios.get("{{ route('aqua.leave.list.data') }}")
+                    axios.get("{{ route('laminin.leave.list.data') }}")
                         .then(response => {
                             this.leaveList = response.data;
                         })
@@ -160,7 +160,7 @@
                         }
                     });
 
-                    axios.post(`{{ route('aqua.leave.list.update', '') }}/${this.currentLeave.id}`, {
+                    axios.post(`{{ route('laminin.leave.list.update', '') }}/${this.currentLeave.id}`, {
                             status: this.currentLeave.status,
                         })
                         .then(response => {

@@ -68,6 +68,7 @@
                                         <th>Date Start</th>
                                         <th>Date End</th>
                                         <th>Type of Day</th>
+                                        <th>Type of Leave</th>
                                         <th>Reason to Leave</th>
                                         <th>Status</th>
                                     </tr>
@@ -80,7 +81,8 @@
                                         <td>@{{ data.name }}</td>
                                         <td>@{{ data.date_start }}</td>
                                         <td>@{{ data.date_end }}</td>
-                                        <td>@{{ data.date_end }}</td>
+                                        <td>@{{ data.type_of_day }}</td>
+                                        <td>@{{ data.type_of_leave }}</td>
                                         <td>@{{ data.reason_to_leave }}</td>
                                         <td>
                                             <span :class="getStatusClass(data.status)">
