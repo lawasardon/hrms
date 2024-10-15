@@ -29,7 +29,8 @@ class AttendanceController extends Controller
             Excel::import(new AttendanceImport, $request->file('attendance_file'));
         });
 
-        return back()->with('success', 'Attendance uploaded successfully.');
+        // return back()->with('success', 'Attendance uploaded successfully.');
+        return response()->json(['message' => 'Attendance uploaded successfully']);
     }
 
 }
