@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\LeaveController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DepartmentController;
 
 // Route::get('/', function () {
@@ -12,6 +13,13 @@ use App\Http\Controllers\DepartmentController;
 // Route::get('/', function () {
 //     return view('auth.user-login');
 // });
+
+Route::get('/attendance', function () {
+    return view('attendance.upload');
+});
+Route::get('/attendance/download/template', [AttendanceController::class, 'attendanceDownloadableTemplate'])->name('attendance.downloadable.template');
+Route::post('/attendance/upload', [AttendanceController::class, 'attendanceUpload'])->name('attendance.upload');
+
 
 Route::get('/', [AuthController::class, 'userLoggedIn'])->name('user.login');
 
@@ -47,6 +55,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/laminin/leave/list', [LeaveController::class, 'lamininLeaveList'])->name('laminin.leave.list');
         Route::get('/laminin/leave/list/data', [LeaveController::class, 'lamininLeaveListData'])->name('laminin.leave.list.data');
         Route::post('/laminin/leave/list/update/{id}', [LeaveController::class, 'lamininLeaveListUpdate'])->name('laminin.leave.list.update');
+
+        Route::get('/attendance/list', [AttendanceController::class, 'attendanceList'])->name('attendance.list');
+        // Route::get('/attendance/download/template', [AttendanceController::class, 'attendanceDownloadableTemplate'])->name('attendance.downloadable.template');
+        // Route::post('/attendance/upload', [AttendanceController::class, 'attendanceUpload'])->name('attendance.upload');
 
     });
 
