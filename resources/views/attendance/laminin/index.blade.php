@@ -1,15 +1,15 @@
 @extends('layouts.main')
 @section('content')
-    <div class="content container-fluid" id="allEmployeeList">
+    <div class="content container-fluid" id="allEmployeeListOfLaminin">
 
         <div class="page-header">
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-sub-header">
-                        <h3 class="page-title">All Employee</h3>
+                        <h3 class="page-title">Laminin Attendance</h3>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="students.html">Dashboard</a></li>
-                            <li class="breadcrumb-item active">All Employees</li>
+                            <li class="breadcrumb-item active">Laminin Attendance</li>
                         </ul>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                 <div class="card card-table comman-shadow">
                     <div class="card-body">
 
-                        <div class="page-header">
+                        {{-- <div class="page-header">
                             <div class="row align-items-center">
                                 <div class="col">
                                     <h3 class="page-title">All Employee</h3>
@@ -59,7 +59,7 @@
                                         Download Attendace Template</a>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="table-responsive">
                             <table
@@ -117,7 +117,7 @@
 @push('js')
     <script>
         new Vue({
-            el: '#allEmployeeList',
+            el: '#allEmployeeListOfLaminin',
             data: {
                 employeeList: [],
             },
@@ -126,7 +126,7 @@
             },
             methods: {
                 allEmployeeOfAqua() {
-                    axios.get("{{ route('attendance.list.all.employee.data') }}")
+                    axios.get("{{ route('attendance.list.laminin.data') }}")
                         .then(response => {
                             this.employeeList = response.data;
                         })

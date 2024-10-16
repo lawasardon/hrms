@@ -65,15 +65,38 @@
                         </ul>
                     </li>
                 @endhasrole --}}
-                @hasrole('admin|hr|employee')
-                    <li class="submenu">
-                        <a href="#"><i class="far fa-calendar-check"></i> <span> Attedance</span> <span
+                @hasrole('admin|hr')
+                    <li
+                        class="submenu {{ request()->routeIs('attendance.list.all.employee', 'attendance.list.aqua', 'attendance.list.laminin') ? 'active' : '' }}">
+                        <a href="#"><i class="far fa-calendar-check"></i> <span> Attendance</span> <span
                                 class="menu-arrow"></span></a>
                         <ul>
-                            <li><a href="students.html">Student List</a></li>
-                            <li><a href="student-details.html">Student View</a></li>
-                            <li><a href="add-student.html">Student Add</a></li>
-                            <li><a href="edit-student.html">Student Edit</a></li>
+                            <li><a href="{{ route('attendance.list.all.employee') }}"
+                                    class="{{ request()->routeIs('attendance.list.all.employee') ? 'active' : '' }}">List</a>
+                            </li>
+                            <li><a href="{{ route('attendance.list.aqua') }}"
+                                    class="{{ request()->routeIs('attendance.list.aqua') ? 'active' : '' }}">Aqua</a></li>
+                            <li><a href="{{ route('attendance.list.laminin') }}"
+                                    class="{{ request()->routeIs('attendance.list.laminin') ? 'active' : '' }}">Laminin</a>
+                            </li>
+                            @if (request()->is('attendance/show/upload/page'))
+                                <li><a href="#"
+                                        class="{{ request()->is('attendance/show/upload/page') ? 'active' : '' }}">Upload
+                                        Attendance</a>
+                                </li>
+                            @else
+                            @endif
+                        </ul>
+                    </li>
+                @endhasrole
+                @hasrole('employee')
+                    <li
+                        class="submenu {{ request()->routeIs(' ', '') ? 'active' : '' }}">
+                        <a href="#"><i class="far fa-calendar-check"></i> <span> Attendance</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul>
+                            <li><a href="#" class=" ">My Attendance</a>
+                            </li>
                         </ul>
                     </li>
                 @endhasrole
@@ -148,7 +171,7 @@
                         </ul>
                     </li>
                 @endhasrole
-                @hasrole('admin|hr')
+                {{-- @hasrole('admin|hr')
                     <li class="submenu">
                         <a href="#"><i class="fas fa-users"></i> <span> Assets</span> <span
                                 class="menu-arrow"></span></a>
@@ -169,7 +192,7 @@
                         <li><a href="add-student.html">Student Add</a></li>
                         <li><a href="edit-student.html">Student Edit</a></li>
                     </ul>
-                </li>
+                </li> --}}
                 <li>
                     <a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a>
                 </li>

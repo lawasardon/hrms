@@ -19,13 +19,13 @@ class AttendanceImport implements ToModel, WithHeadingRow
         \Log::info('Importing row:', $row);
 
         // Ensure each key exists in the row before accessing
-        if (isset($row['student_id']) && isset($row['student_name']) && isset($row['date_yyyy_mm_dd']) && isset($row['attendance_status'])) {
+        if (isset($row['name']) && isset($row['department']) && isset($row['date_yyyy_mm_dd']) && isset($row['attendance_status'])) {
             // Convert the Excel date serial number to a PHP date
             $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['date_yyyy_mm_dd']);
 
             return new Attendance([
-                'student_id' => $row['student_id'],
-                'student_name' => $row['student_name'],
+                'name' => $row['name'],
+                'department' => $row['department'],
                 'date' => $date->format('Y-m-d'), // Format to YYYY-MM-DD
                 'attendance_status' => $row['attendance_status'],
             ]);
@@ -33,5 +33,4 @@ class AttendanceImport implements ToModel, WithHeadingRow
 
         return null;
     }
-
 }

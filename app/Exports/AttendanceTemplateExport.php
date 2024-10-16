@@ -12,9 +12,9 @@ class AttendanceTemplateExport implements FromArray, WithEvents
     public function array(): array
     {
         return [
-            ['Student ID', 'Student Name', 'Date (YYYY-MM-DD)', 'Attendance Status'],
-            ['EX: 12345', 'EX: John Doe', 'EX: 2024-01-01', ''],
-            ['EX: 67890', 'EX: Jane Smith', 'EX: 2024-01-01', ''],
+            ['Name', 'Department', 'Date (YYYY-MM-DD)', 'Attendance Status'],
+            ['EX: John Doe', 'EX: aqua', 'EX: 2024-01-01', ''],
+            ['EX: Jane Smith', 'EX: aqua', 'EX: 2024-01-01', ''],
         ];
     }
 
@@ -22,22 +22,36 @@ class AttendanceTemplateExport implements FromArray, WithEvents
     {
         return [
             BeforeSheet::class => function (BeforeSheet $event) {
-                $event->sheet->getDelegate()->getColumnDimension('D')->setWidth(25);
-                $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(20); // Set width for Date column
+                $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(25); // Set width for Date column
+                $event->sheet->getDelegate()->getColumnDimension('B')->setWidth(20); // Set width for Department column
 
                 // Define the dropdown options for attendance status
-                $dropdownOptions = '"Present,Absent"';
+                $attendanceDropdownOptions = '"Present,Absent"';
 
-                // Apply dropdown to rows 2 to 100 in column D
+                // Define the dropdown options for department
+                $departmentDropdownOptions = '"aqua,laminin"';
+
+                // Apply dropdowns to rows 2 to 100
                 for ($row = 2; $row <= 100; $row++) {
-                    // Set up attendance status dropdown
+                    // Set up attendance status dropdown in column D
                     $attendanceCell = 'D' . $row;
                     $event->sheet->getDelegate()->getCell($attendanceCell)
                         ->getDataValidation()
                         ->setType(DataValidation::TYPE_LIST)
                         ->setErrorStyle(DataValidation::STYLE_STOP)
                         ->setAllowBlank(true)
-                        ->setFormula1($dropdownOptions)
+                        ->setFormula1($attendanceDropdownOptions)
+                        ->setShowErrorMessage(true)
+                        ->setShowDropDown(true);
+
+                    // Set up department dropdown in column B
+                    $departmentCell = 'B' . $row;
+                    $event->sheet->getDelegate()->getCell($departmentCell)
+                        ->getDataValidation()
+                        ->setType(DataValidation::TYPE_LIST)
+                        ->setErrorStyle(DataValidation::STYLE_STOP)
+                        ->setAllowBlank(true)
+                        ->setFormula1($departmentDropdownOptions)
                         ->setShowErrorMessage(true)
                         ->setShowDropDown(true);
 

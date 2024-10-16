@@ -14,11 +14,11 @@ use App\Http\Controllers\DepartmentController;
 //     return view('auth.user-login');
 // });
 
-Route::get('/attendance', function () {
-    return view('attendance.upload');
-});
-Route::get('/attendance/download/template', [AttendanceController::class, 'attendanceDownloadableTemplate'])->name('attendance.downloadable.template');
-Route::post('/attendance/upload', [AttendanceController::class, 'attendanceUpload'])->name('attendance.upload');
+// Route::get('/attendance', function () {
+//     return view('attendance.upload');
+// });
+// Route::get('/attendance/download/template', [AttendanceController::class, 'attendanceDownloadableTemplate'])->name('attendance.downloadable.template');
+// Route::post('/attendance/upload', [AttendanceController::class, 'attendanceUpload'])->name('attendance.upload');
 
 
 Route::get('/', [AuthController::class, 'userLoggedIn'])->name('user.login');
@@ -56,9 +56,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/laminin/leave/list/data', [LeaveController::class, 'lamininLeaveListData'])->name('laminin.leave.list.data');
         Route::post('/laminin/leave/list/update/{id}', [LeaveController::class, 'lamininLeaveListUpdate'])->name('laminin.leave.list.update');
 
-        Route::get('/attendance/list', [AttendanceController::class, 'attendanceList'])->name('attendance.list');
-        // Route::get('/attendance/download/template', [AttendanceController::class, 'attendanceDownloadableTemplate'])->name('attendance.downloadable.template');
-        // Route::post('/attendance/upload', [AttendanceController::class, 'attendanceUpload'])->name('attendance.upload');
+        // Route::get('/attendance/list', [AttendanceController::class, 'attendanceList'])->name('attendance.list');
+        Route::get('/attendance/download/template', [AttendanceController::class, 'attendanceDownloadableTemplate'])->name('attendance.downloadable.template');
+        Route::get('/attendance/show/upload/page', [AttendanceController::class, 'attendanceShowUploadPage'])->name('attendance.show.upload.page');
+        Route::post('/attendance/upload', [AttendanceController::class, 'attendanceUpload'])->name('attendance.upload');
+
+        Route::get('/attendance/list/all/employee', [AttendanceController::class, 'attendanceListAllEmployee'])->name('attendance.list.all.employee');
+        Route::get('/attendance/list/all/employee/data', [AttendanceController::class, 'attendanceListAllEmployeeData'])->name('attendance.list.all.employee.data');
+        Route::get('/attendance/list/aqua', [AttendanceController::class, 'attendanceListAqua'])->name('attendance.list.aqua');
+        Route::get('/attendance/list/aqua/data', [AttendanceController::class, 'attendanceListAquaData'])->name('attendance.list.aqua.data');
+        Route::get('/attendance/list/laminin', [AttendanceController::class, 'attendanceListLaminin'])->name('attendance.list.laminin');
+        Route::get('/attendance/list/aqua/laminin', [AttendanceController::class, 'attendanceListLamininData'])->name('attendance.list.laminin.data');
 
     });
 

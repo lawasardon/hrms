@@ -15,10 +15,10 @@ class CreateAttendanceTable extends Migration
     {
         Schema::create('attendance', function (Blueprint $table) {
             $table->id();
-            $table->string('student_id'); // Student ID
-            $table->string('student_name'); // Student Name
-            $table->date('date'); // Date of attendance
-            $table->enum('attendance_status', ['Present', 'Absent'])->nullable(); // Attendance status
+            $table->string('name');
+            $table->enum('department', ['aqua', 'laminin'])->nullable();
+            $table->date('date');
+            $table->enum('attendance_status', ['Present', 'Absent'])->nullable();
             $table->timestamps();
         });
     }
