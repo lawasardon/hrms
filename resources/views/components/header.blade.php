@@ -1,10 +1,10 @@
 <div class="header">
 
     <div class="header-left">
-        <a href="index.html" class="logo">
+        <a href="/" class="logo">
             <img src="{{ asset('admin/assets/img/hrlogo.png') }}" alt="Logo">
         </a>
-        <a href="index.html" class="logo logo-small">
+        <a href="/" class="logo logo-small">
             <img src="{{ asset('admin/assets/img/hr-small-logo.png') }}" alt="Logo" width="30" height="30">
         </a>
     </div>
