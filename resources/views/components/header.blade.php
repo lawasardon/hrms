@@ -156,8 +156,8 @@
                         <p class="text-muted mb-0">Administrator</p>
                     </div>
                 </div>
-                <a class="dropdown-item" href="profile.html">My Profile</a>
-                <a class="dropdown-item" href="inbox.html">Inbox</a>
+                {{-- <a class="dropdown-item" href="profile.html">My Profile</a>
+                <a class="dropdown-item" href="inbox.html">Inbox</a> --}}
                 <a class="dropdown-item" href="{{ route('logout') }}"
                     onclick="event.preventDefault();
                               document.getElementById('logout-form').submit();">

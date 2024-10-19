@@ -4,10 +4,10 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="page-sub-header">
-                    <h3 class="page-title">Welcome Admin!</h3>
+                    <h3 class="page-title">Welcome {{Auth::user()->name}}!</h3>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item active">Admin</li>
+                        <li class="breadcrumb-item active">Dashboard</li>
                     </ul>
                 </div>
             </div>
