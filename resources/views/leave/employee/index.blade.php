@@ -67,6 +67,7 @@
                                         <th>Name</th>
                                         <th>Date Start</th>
                                         <th>Date End</th>
+                                        <th>Total Days</th>
                                         <th>Type of Day</th>
                                         <th>Type of Leave</th>
                                         <th>Reason to Leave</th>
@@ -76,11 +77,12 @@
                                 <tbody>
                                     <tr v-for="data in leaveList" :id="data.id">
 
-                                        <td>@{{ data.date_filed }}</td>
+                                        <td>@{{ formatDate(data.date_filed) }}</td>
                                         <td>@{{ data.department.name }}</td>
                                         <td>@{{ data.name }}</td>
-                                        <td>@{{ data.date_start }}</td>
-                                        <td>@{{ data.date_end }}</td>
+                                        <td>@{{ formatDate(data.date_start) }}</td>
+                                        <td>@{{ formatDate(data.date_end) }}</td>
+                                        <td>@{{ data.total_days_leave }}</td>
                                         <td>@{{ data.type_of_day }}</td>
                                         <td>@{{ data.type_of_leave }}</td>
                                         <td>@{{ data.reason_to_leave }}</td>
@@ -152,6 +154,15 @@
                         default:
                             return '';
                     }
+                },
+
+                formatDate(dateString) {
+                    const options = {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    };
+                    return new Date(dateString).toLocaleDateString('en-US', options);
                 },
             }
         });

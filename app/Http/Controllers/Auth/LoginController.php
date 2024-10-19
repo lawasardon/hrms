@@ -41,11 +41,11 @@ class LoginController extends Controller
     protected function authenticated($request, $user)
     {
         if ($user->hasRole('employee')) {
-            return redirect('/emindex');
+            return redirect('/');
         } elseif ($user->hasRole('hr')) {
-            return redirect('/hrindex');
+            return redirect('/');
         } elseif ($user->hasRole('admin')) {
-            return redirect('/index');
+            return redirect('/');
         }
 
         return redirect($this->redirectTo);

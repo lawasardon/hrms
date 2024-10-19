@@ -77,8 +77,14 @@ class LeaveController extends Controller
 
     public function getDepartmentIdData()
     {
-        $departmentId = Auth::user()->employee->department_id;
-        return response()->json($departmentId);
+        $user = Auth::user();
+        $departmentId = $user->employee->department_id;
+        $userName = $user->name;
+
+        return response()->json([
+            'department_id' => $departmentId,
+            'name' => $userName,
+        ]);
     }
 
     public function createLeave()
@@ -94,6 +100,7 @@ class LeaveController extends Controller
             'name' => 'required|string',
             'date_start' => 'required|string',
             'date_end' => 'required|string',
+            'total_days_leave' => 'required|integer',
             'type_of_day' => 'required|string',
             'type_of_leave' => 'required|string',
             'reason_to_leave' => 'required|string',

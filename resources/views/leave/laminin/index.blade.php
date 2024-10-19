@@ -73,20 +73,24 @@
                                         <th>Name</th>
                                         <th>Date Start</th>
                                         <th>Date End</th>
+                                        <th>Total Days</th>
                                         <th>Type of Day</th>
                                         <th>Type of Leave</th>
                                         <th>Reason to Leave</th>
                                         <th>Status</th>
-                                        <th class="text-end">Action</th>
+                                        @hasrole('admin')
+                                            <th class="text-end">Action</th>
+                                        @endhasrole
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="data in leaveList" :id="data.id">
-                                        <td>@{{ data.date_filed }}</td>
+                                        <td>@{{ formatDate(data.date_filed) }}</td>
                                         <td>@{{ data.department.name }}</td>
                                         <td>@{{ data.name }}</td>
-                                        <td>@{{ data.date_start }}</td>
-                                        <td>@{{ data.date_end }}</td>
+                                        <td>@{{ formatDate(data.date_start) }}</td>
+                                        <td>@{{ formatDate(data.date_end) }}</td>
+                                        <td>@{{ data.total_days_leave }}</td>
                                         <td>@{{ data.type_of_day }}</td>
                                         <td>@{{ data.type_of_leave }}</td>
                                         <td>@{{ data.reason_to_leave }}</td>
@@ -95,14 +99,17 @@
                                                 @{{ data.status }}
                                             </span>
                                         </td>
-                                        <td class="text-end">
-                                            <div class="actions">
-                                                <a href="javascript:;" class="btn btn-sm bg-danger-light"
-                                                    @click="openEditModal(data)">
-                                                    <i class="feather-edit"></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                        @hasrole('admin')
+                                            <td class="text-end"
+                                                :hidden="data.status === 'approved' || data.status === 'rejected'">
+                                                <div class="actions">
+                                                    <a href="javascript:;" class="btn btn-sm bg-danger-light"
+                                                        @click="openEditModal(data)">
+                                                        <i class="feather-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        @endhasrole
                                     </tr>
                                 </tbody>
                             </table>
@@ -200,6 +207,15 @@
                         default:
                             return '';
                     }
+                },
+
+                formatDate(dateString) {
+                    const options = {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    };
+                    return new Date(dateString).toLocaleDateString('en-US', options);
                 },
             },
         });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StaticPagesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LeaveController;
@@ -10,34 +11,21 @@ use App\Http\Controllers\DepartmentController;
 //     return view('welcome');
 // });
 
-// Route::get('/', function () {
-//     return view('auth.user-login');
-// });
 
-// Route::get('/attendance', function () {
-//     return view('attendance.upload');
-// });
-// Route::get('/attendance/download/template', [AttendanceController::class, 'attendanceDownloadableTemplate'])->name('attendance.downloadable.template');
-// Route::post('/attendance/upload', [AttendanceController::class, 'attendanceUpload'])->name('attendance.upload');
-
-
-Route::get('/', [AuthController::class, 'userLoggedIn'])->name('user.login');
+Route::get('/user/login', [AuthController::class, 'userLoggedIn'])->name('user.login');
 
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::group(['middleware' => ['auth']], function () {
+
+    Route::get('/', [StaticPagesController::class, 'showIndex'])->name('home');
+
     Route::group(['middleware' => ['role:admin']], function () {
-        Route::get('/index', function () {
-            return view('index');
-        });
         Route::get('/aqua/department', [DepartmentController::class, 'showAquaDepartment'])->name('show.aqua.department');
     });
 
     Route::group(['middleware' => ['role:admin|hr']], function () {
-        Route::get('/hrindex', function () {
-            return view('index');
-        });
         Route::get('/aqua/employee/list', [DepartmentController::class, 'showAquaEmployeeList'])->name('show.aqua.employee.list');
         Route::get('/aqua/employee/list/data', [DepartmentController::class, 'aquaEmployeeListData'])->name('aqua.employee.list.data');
         Route::get('/aqua/add/employee', [DepartmentController::class, 'aquaAddEmployee'])->name('aqua.add.employee');
@@ -71,9 +59,6 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     Route::group(['middleware' => ['role:admin|employee']], function () {
-        Route::get('/emindex', function () {
-            return view('index');
-        });
         Route::get('/leave/list', [LeaveController::class, 'leaveList'])->name('employee.leave.list');
         Route::get('/leave/list/data', [LeaveController::class, 'leaveListData'])->name('employee.leave.list.data');
         Route::get('/get/department/id/data', [LeaveController::class, 'getDepartmentIdData'])->name('employee.get.department.id.data');

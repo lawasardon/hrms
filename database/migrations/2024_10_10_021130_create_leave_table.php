@@ -21,6 +21,7 @@ class CreateLeaveTable extends Migration
             $table->string('name');
             $table->date('date_start');
             $table->date('date_end');
+            $table->integer('total_days_leave');
             $table->string('type_of_day');
             $table->string('type_of_leave');
             $table->string('reason_to_leave');

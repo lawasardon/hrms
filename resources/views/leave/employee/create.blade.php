@@ -32,7 +32,7 @@
                                 <div class="col-12 col-sm-4">
                                     <div class="form-group">
                                         <label>Name <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" v-model="name" required>
+                                        <input type="text" class="form-control" v-model="name" required readonly>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-4">
@@ -45,6 +45,13 @@
                                     <div class="form-group">
                                         <label>Date End <span class="text-danger">*</span></label>
                                         <input type="date" class="form-control" v-model="date_end" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    <div class="form-group">
+                                        <label>Total Days Leave <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" v-model="total_days_leave" required
+                                            readonly>
                                     </div>
                                 </div>
                                 <div class="col-12 col-sm-4">
@@ -105,6 +112,7 @@
                 date_filed: new Date().toISOString().split('T')[0],
                 date_start: '',
                 date_end: '',
+                total_days_leave: '',
                 type_of_day: '',
                 type_of_leave: '',
                 reason_to_leave: '',
@@ -115,12 +123,22 @@
                 this.getDepartmentId();
             },
 
+            watch: {
+                date_start(newVal) {
+                    this.calculateTotalDaysLeave();
+                },
+                date_end(newVal) {
+                    this.calculateTotalDaysLeave();
+                }
+            },
+
             methods: {
                 getDepartmentId() {
                     axios.get("{{ route('employee.get.department.id.data') }}")
                         .then(response => {
-                            this.myDepartment = response.data;
-                            this.department_id = this.myDepartment; // Assign fetched value to department_id
+                            this.myDepartment = response.data.department_id;
+                            this.department_id = this.myDepartment;
+                            this.name = response.data.name;
                         })
                         .catch(error => {
                             console.error('Error fetching department ID', error.response ? error.response.data :
@@ -146,6 +164,7 @@
                             date_filed: this.date_filed,
                             date_start: this.date_start,
                             date_end: this.date_end,
+                            total_days_leave: this.total_days_leave,
                             type_of_day: this.type_of_day,
                             type_of_leave: this.type_of_leave,
                             reason_to_leave: this.reason_to_leave,
@@ -173,6 +192,24 @@
                                 allowEscapeKey: false,
                             });
                         });
+                },
+
+                calculateTotalDaysLeave() {
+                    if (this.date_start && this.date_end) {
+                        const startDate = new Date(this.date_start);
+                        const endDate = new Date(this.date_end);
+                        const timeDiff = endDate - startDate;
+
+                        if (timeDiff >= 0) {
+                            const days = Math.ceil(timeDiff / (1000 * 3600 * 24)) +
+                                1;
+                            this.total_days_leave = days;
+                        } else {
+                            this.total_days_leave = '';
+                        }
+                    } else {
+                        this.total_days_leave = '';
+                    }
                 },
             }
         });

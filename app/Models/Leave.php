@@ -18,6 +18,7 @@ class Leave extends Model
         'name',
         'date_start',
         'date_end',
+        'total_days_leave',
         'type_of_day',
         'type_of_leave',
         'reason_to_leave',
