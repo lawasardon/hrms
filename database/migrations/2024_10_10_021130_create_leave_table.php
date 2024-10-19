@@ -25,6 +25,7 @@ class CreateLeaveTable extends Migration
             $table->string('type_of_day');
             $table->string('type_of_leave');
             $table->string('reason_to_leave');
+            $table->string('reason_of_rejection')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
 

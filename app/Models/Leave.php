@@ -22,6 +22,7 @@ class Leave extends Model
         'type_of_day',
         'type_of_leave',
         'reason_to_leave',
+        'reason_of_rejection',
         'status',
     ];
 

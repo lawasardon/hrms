@@ -40,6 +40,7 @@ class LeaveController extends Controller
     {
         $validatedData = $request->validate([
             'status' => 'required|string',
+            'reason_of_rejection' => 'nullable|string',
         ]);
 
         $leave = Leave::findOrFail($id);

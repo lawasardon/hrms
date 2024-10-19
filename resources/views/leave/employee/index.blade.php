@@ -71,6 +71,7 @@
                                         <th>Type of Day</th>
                                         <th>Type of Leave</th>
                                         <th>Reason to Leave</th>
+                                        <th>Reason of Rejection</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -86,6 +87,7 @@
                                         <td>@{{ data.type_of_day }}</td>
                                         <td>@{{ data.type_of_leave }}</td>
                                         <td>@{{ data.reason_to_leave }}</td>
+                                        <td>@{{ data.reason_of_rejection || 'N/A' }}</td>
                                         <td>
                                             <span :class="getStatusClass(data.status)">
                                                 @{{ data.status }}

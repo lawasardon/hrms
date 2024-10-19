@@ -56,6 +56,11 @@
                         <option value="rejected">Rejected</option>
                     </select>
                 </div>
+
+                <div class="form-group" v-if="currentLeave.status === 'rejected'">
+                    <label class="col-form-label">Reason for Rejection:</label>
+                    <textarea class="form-control" v-model="currentLeave.reason_of_rejection"></textarea>
+                </div>
             </form>
         </x-modal>
 
@@ -77,6 +82,7 @@
                                         <th>Type of Day</th>
                                         <th>Type of Leave</th>
                                         <th>Reason to Leave</th>
+                                        <th>Reason of Rejection</th>
                                         <th>Status</th>
                                         @hasrole('admin')
                                             <th class="text-end">Action</th>
@@ -94,6 +100,7 @@
                                         <td>@{{ data.type_of_day }}</td>
                                         <td>@{{ data.type_of_leave }}</td>
                                         <td>@{{ data.reason_to_leave }}</td>
+                                        <td>@{{ data.reason_of_rejection || 'N/A' }}</td>
                                         <td>
                                             <span :class="getStatusClass(data.status)">
                                                 @{{ data.status }}
@@ -134,7 +141,8 @@
                     date_end: '',
                     type_of_day: '',
                     reason_to_leave: '',
-                    status: ''
+                    reason_of_rejection: '',
+                    status: '',
                 },
             },
             mounted() {
@@ -153,7 +161,8 @@
                 },
                 openEditModal(data) {
                     this.currentLeave = {
-                        ...data
+                        ...data,
+                        reason_of_rejection: '',
                     };
                     $('#editModalLeaveList').modal('show');
                 },
@@ -167,9 +176,15 @@
                         }
                     });
 
-                    axios.post(`{{ route('aqua.leave.list.update', '') }}/${this.currentLeave.id}`, {
-                            status: this.currentLeave.status,
-                        })
+                    const payload = {
+                        status: this.currentLeave.status,
+                    };
+
+                    if (this.currentLeave.status === 'rejected') {
+                        payload.reason_of_rejection = this.currentLeave.reason_of_rejection;
+                    }
+
+                    axios.post(`{{ route('aqua.leave.list.update', '') }}/${this.currentLeave.id}`, payload)
                         .then(response => {
                             const index = this.leaveList.findIndex(leave => leave.id === this.currentLeave.id);
                             if (index !== -1) {
@@ -188,7 +203,6 @@
                         .catch(error => {
                             console.error('Error updating leave status', error.response ? error.response.data :
                                 error);
-
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error!',
@@ -208,7 +222,6 @@
                             return '';
                     }
                 },
-
                 formatDate(dateString) {
                     const options = {
                         year: 'numeric',
