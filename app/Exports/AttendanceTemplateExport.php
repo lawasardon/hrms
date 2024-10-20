@@ -13,8 +13,8 @@ class AttendanceTemplateExport implements FromArray, WithEvents
     {
         return [
             ['Name', 'Department', 'Date (YYYY-MM-DD)', 'Attendance Status'],
-            ['EX: John Doe', 'EX: aqua', 'EX: 2024-01-01', ''],
-            ['EX: Jane Smith', 'EX: aqua', 'EX: 2024-01-01', ''],
+            ['John Doe', 'aqua', '2024-01-01', 'Present'],
+            ['Jane Smith', 'laminin', '2024-01-01', 'Absent'],
         ];
     }
 

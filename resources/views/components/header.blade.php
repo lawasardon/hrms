@@ -141,7 +141,7 @@
                         width="31" alt="Soeng Souy">
                     <div class="user-text">
                         <h6>{{ Auth::user()->name }}</h6>
-                        <p class="text-muted mb-0">Administrator</p>
+                        {{-- <p class="text-muted mb-0">Administrator</p> --}}
                     </div>
                 </span>
             </a>
@@ -153,7 +153,7 @@
                     </div>
                     <div class="user-text">
                         <h6>{{ Auth::user()->name }}</h6>
-                        <p class="text-muted mb-0">Administrator</p>
+                        {{-- <p class="text-muted mb-0">Administrator</p> --}}
                     </div>
                 </div>
                 {{-- <a class="dropdown-item" href="profile.html">My Profile</a>

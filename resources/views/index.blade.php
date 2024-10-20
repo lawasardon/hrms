@@ -2,5 +2,5 @@
 
 @section('content')
     @include('pages.dashboard')
-    @include('components.footer')
+    {{-- @include('components.footer') --}}
 @endsection
