@@ -6,10 +6,13 @@
                     <span>Main Menu</span>
                 </li>
                 @hasrole('admin|hr')
-                    <li class="submenu {{ request()->routeIs('') ? 'active' : '' }}">
-                        <a href="#"><i class="feather-grid"></i> <span> Dashboard</span> <span
-                                class="menu-arrow"></span></a>
-                        <ul>
+                    <li class="submenu {{ request()->routeIs('home') ? 'active' : '' }}">
+                        <a href="#" @click.prevent="goToDashboard">
+                            <i class="feather-grid"></i> <span> Dashboard</span> <span class="menu-arrow"></span>
+                        </a>
+                        {{-- <a href="/"><i class="feather-grid"></i> <span> Dashboard</span> <span
+                                class="menu-arrow"></span></a> --}}
+                        {{-- <ul>
                             <li><a href="index.html">Admin Dashboard</a></li>
                             <li><a href="teacher-dashboard.html">Teacher Dashboard</a></li>
                             <li><a href="student-dashboard.html">Student Dashboard</a></li>
@@ -17,7 +20,7 @@
                             <li><a href="teacher-dashboard.html">Teacher Dashboard</a></li>
 
                             <li><a href="student-dashboard.html">Student Dashboard</a></li>
-                        </ul>
+                        </ul> --}}
                     </li>
                 @endhasrole
                 @hasrole('admin|hr')
@@ -90,8 +93,7 @@
                     </li>
                 @endhasrole
                 @hasrole('employee')
-                    <li
-                        class="submenu {{ request()->routeIs(' ', '') ? 'active' : '' }}">
+                    <li class="submenu {{ request()->routeIs(' ', '') ? 'active' : '' }}">
                         <a href="#"><i class="far fa-calendar-check"></i> <span> Attendance</span> <span
                                 class="menu-arrow"></span></a>
                         <ul>
@@ -200,3 +202,16 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#sidebar',
+        methods: {
+            goToDashboard() {
+                window.location.href = '/';
+            }
+        }
+    });
+</script>
