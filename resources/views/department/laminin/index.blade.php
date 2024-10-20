@@ -52,14 +52,16 @@
                                     <h3 class="page-title">Employees</h3>
                                 </div>
                                 <div class="col-auto text-end float-end ms-auto download-grp">
-                                    <a href="students.html" class="btn btn-outline-gray me-2 active"><i
+                                    {{-- <a href="students.html" class="btn btn-outline-gray me-2 active"><i
                                             class="feather-list"></i></a>
                                     <a href="students-grid.html" class="btn btn-outline-gray me-2"><i
                                             class="feather-grid"></i></a>
                                     <a href="#" class="btn btn-outline-primary me-2"><i class="fas fa-download"></i>
-                                        Download</a>
-                                    <a href="{{ route('laminin.add.employee') }}" class="btn btn-primary"><i
-                                            class="fas fa-plus"></i></a>
+                                        Download</a> --}}
+                                    @if (Auth::user()->hasRole('hr'))
+                                        <a href="{{ route('laminin.add.employee') }}" class="btn btn-primary"><i
+                                                class="fas fa-plus"></i></a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
