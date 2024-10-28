@@ -70,13 +70,15 @@
                                         <th>Name</th>
                                         <th>Department</th>
                                         <th>Date</th>
+                                        <th>Time In</th>
+                                        <th>Time Out</th>
                                         <th>Status</th>
                                         <th class="text-end">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="data in employeeList" :key="data.id">
-                                        <td>@{{ data.id }}</td>
+                                        <td>@{{ data.id_number }}</td>
                                         <td>
                                             <h2 class="table-avatar">
                                                 {{-- <a href="student-details.html" class="avatar avatar-sm me-2"><img
@@ -86,7 +88,9 @@
                                             </h2>
                                         </td>
                                         <td>@{{ data.department }}</td>
-                                        <td>@{{ data.date }}</td>
+                                        <td>@{{ formatDate(data.date) }}</td>
+                                        <td>@{{ data.time_in }}</td>
+                                        <td>@{{ data.time_out }}</td>
                                         <td>
                                             <span :class="getAttendanceStatus(data.attendance_status)">
                                                 @{{ data.attendance_status }}
@@ -137,13 +141,21 @@
                 },
                 getAttendanceStatus(status) {
                     switch (status) {
-                        case 'Present':
+                        case 'Not Late':
                             return 'badge badge-success';
-                        case 'Absent':
+                        case 'Late':
                             return 'badge badge-danger';
                         default:
                             return '';
                     }
+                },
+                formatDate(dateString) {
+                    const options = {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    };
+                    return new Date(dateString).toLocaleDateString('en-US', options);
                 },
             }
         });

@@ -12,9 +12,12 @@ class Attendance extends Model
     protected $table = 'attendance';
 
     protected $fillable = [
+        'id_number',
         'name',
         'department',
         'date',
-        'attendance_status',
+        'time_in',
+        'time_out',
+        'status',
     ];
 }

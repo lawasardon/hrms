@@ -13,11 +13,13 @@ class EmployeeAccountCreated extends Mailable
 
     public $employee;
     public $password;
+    public $idNumber;
 
-    public function __construct(Employee $employee, $password)
+    public function __construct(Employee $employee, $password, $idNumber)
     {
         $this->employee = $employee;
         $this->password = $password;
+        $this->idNumber = $idNumber;
     }
 
     public function build()
@@ -28,6 +30,7 @@ class EmployeeAccountCreated extends Mailable
                 'name' => $this->employee->user->name,
                 'email' => $this->employee->email,
                 'password' => $this->password,
+                'idNumber' => $this->idNumber,
             ]);
     }
 }

@@ -146,16 +146,14 @@
                     </li>
                 @endhasrole
                 @hasrole('admin|hr')
-                    <li class="submenu">
+                    <li class="submenu {{ request()->routeIs('show.aqua.payroll', '') ? 'active' : '' }}">
                         <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span> Payroll</span> <span
                                 class="menu-arrow"></span></a>
                         <ul>
-                            <li><a href="fees-collections.html">Fees Collection</a></li>
-                            <li><a href="expenses.html">Expenses</a></li>
-                            <li><a href="salary.html">Salary</a></li>
-                            <li><a href="add-fees-collection.html">Add Fees</a></li>
-                            <li><a href="add-expenses.html">Add Expenses</a></li>
-                            <li><a href="add-salary.html">Add Salary</a></li>
+                            <li><a href="{{ route('show.aqua.payroll') }}"
+                                    class="{{ request()->routeIs('show.aqua.payroll') ? 'active' : '' }}">Aqua</a></li>
+                            <li><a href=" " class=" ">Laminin</a>
+                            </li>
                         </ul>
                     </li>
                 @endhasrole

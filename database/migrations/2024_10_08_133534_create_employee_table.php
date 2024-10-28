@@ -17,6 +17,7 @@ class CreateEmployeeTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('department_id')->nullable();
+            $table->unsignedBigInteger('id_number')->unique()->nullable();
             $table->string('name');
             $table->string('email')->unique();
             $table->string('address')->nullable();
@@ -26,7 +27,6 @@ class CreateEmployeeTable extends Migration
             $table->string('religion')->nullable();
             $table->timestamps();
 
-            // Foreign key constraints
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('department_id')->references('id')->on('department')->onDelete('cascade');
         });

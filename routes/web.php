@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\StaticPagesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\StaticPagesController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -55,6 +56,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/attendance/list/aqua/data', [AttendanceController::class, 'attendanceListAquaData'])->name('attendance.list.aqua.data');
         Route::get('/attendance/list/laminin', [AttendanceController::class, 'attendanceListLaminin'])->name('attendance.list.laminin');
         Route::get('/attendance/list/aqua/laminin', [AttendanceController::class, 'attendanceListLamininData'])->name('attendance.list.laminin.data');
+
+        Route::get('/aqua/payroll', [PayrollController::class, 'showAquaPayroll'])->name('show.aqua.payroll');
+        Route::get('/aqua/payroll/data', [PayrollController::class, 'showAquaPayrollData'])->name('show.aqua.payroll.data');
+        Route::get('/aqua/show/payroll/{id}', [PayrollController::class,'aquaShowEditModal'])->name('aqua.payroll.show');
+        Route::post('/aqua/payroll/update/{id}', [PayrollController::class, 'updateAquaPayroll'])->name('aqua.update.payroll');
+
 
     });
 

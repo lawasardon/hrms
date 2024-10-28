@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Payroll;
 use App\Models\Employee;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -34,9 +35,20 @@ class DepartmentController extends Controller
             'religion' => 'required|string|max:255',
         ]);
 
+        // Generate unique employee ID
+        $year = date('y'); // Get last two digits of the current year
+        $lastId = Employee::where('id_number', 'like', "$year%")->max('id_number');
+        $increment = $lastId ? intval(substr($lastId, 2)) + 1 : 1; // Increment based on last ID
+        $idNumber = sprintf('%s%04d', $year, $increment); // Format ID
+
         $password = Str::random(10);
 
-        $employee = Employee::create($validatedData);
+        $employee = Employee::create(array_merge($validatedData, ['id_number' => $idNumber]));
+
+        $payroll = Payroll::create([
+            'department_id' => $validatedData['department_id'],
+            'employee_id' => $employee->id,
+        ]);
 
         $user = User::create([
             'name' => $validatedData['name'],
@@ -50,7 +62,7 @@ class DepartmentController extends Controller
 
         $user->assignRole('employee');
 
-        Mail::to($validatedData['email'])->send(new EmployeeAccountCreated($employee, $password));
+        Mail::to($validatedData['email'])->send(new EmployeeAccountCreated($employee, $password, $idNumber));
 
         return response()->json(['message' => 'Employee added successfully', 'employee' => $employee], 201);
     }

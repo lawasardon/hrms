@@ -15,11 +15,16 @@ class CreateAttendanceTable extends Migration
     {
         Schema::create('attendance', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_number')->nullable();
             $table->string('name');
             $table->enum('department', ['aqua', 'laminin'])->nullable();
             $table->date('date');
-            $table->enum('attendance_status', ['Present', 'Absent'])->nullable();
+            $table->time('time_in')->nullable();
+            $table->time('time_out')->nullable();
+            $table->enum('status', ['Late', 'Not Late'])->nullable();
             $table->timestamps();
+
+            $table->foreign('id_number')->references('id_number')->on('employee')->onDelete('cascade');
         });
     }
 
