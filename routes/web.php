@@ -57,6 +57,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/attendance/list/laminin', [AttendanceController::class, 'attendanceListLaminin'])->name('attendance.list.laminin');
         Route::get('/attendance/list/aqua/laminin', [AttendanceController::class, 'attendanceListLamininData'])->name('attendance.list.laminin.data');
 
+        Route::get('/all/employee/rates', [PayrollController::class, 'showAllEmployeeRates'])->name('show.all.employee.rates');
+        Route::get('/all/employee/rates/data', [PayrollController::class, 'showAllEmployeeRatesData'])->name('show.all.employee.rates.data');
+        Route::post('/update/employee/rate/{id}', [PayrollController::class, 'updateAquaPayroll'])->name('update.employee.rate');
+
         Route::get('/aqua/payroll', [PayrollController::class, 'showAquaPayroll'])->name('show.aqua.payroll');
         Route::get('/aqua/payroll/data', [PayrollController::class, 'showAquaPayrollData'])->name('show.aqua.payroll.data');
         Route::get('/aqua/show/payroll/{id}', [PayrollController::class,'aquaShowEditModal'])->name('aqua.payroll.show');

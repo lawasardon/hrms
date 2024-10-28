@@ -7,6 +7,30 @@ use Illuminate\Http\Request;
 
 class PayrollController extends Controller
 {
+
+    public function showAllEmployeeRates()
+    {
+        return view('payroll.rates');
+    }
+
+    public function showAllEmployeeRatesData()
+    {
+        $employeeRates = Payroll::with('employee')->get();
+        return response()->json($employeeRates);
+    }
+
+    public function updateAquaPayroll(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'monthly_rate' => 'nullable|integer',
+        ]);
+
+        $monthlyRate = Payroll::findOrFail($id);
+        $monthlyRate->update($validatedData);
+
+        return response()->json(['message' => 'Updated successfully', 'rate' => $monthlyRate], 200);
+    }
+
     public function showAquaPayroll()
     {
         return view('payroll.aqua.index');
