@@ -17,19 +17,34 @@
         <x-modal submitMethod="updateLeaveStatus" modalId="payrollModal" title="Aqua Leave List" submitId="submitEdit"
             submitText="Save Changes">
             <form @submit.prevent="updateLeaveStatus">
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="col-form-label">Id:</label>
-                    <input type="text" class="form-control" v-model="employeeRate.employee.id" disabled>
-                </div>
+                    <input type="text" class="form-control" v-model="employeeRate.id" disabled>
+                </div> --}}
 
                 <div class="form-group">
                     <label class="col-form-label">Name:</label>
-                    <input type="text" class="form-control" v-model="employeeRate.employee.name" disabled>
+                    <input type="text" class="form-control" v-model="employeeRate.name" disabled>
                 </div>
 
                 <div class="form-group">
                     <label class="col-form-label">Monthly Rate:</label>
-                    <input type="text" class="form-control" v-model="employeeRate.monthly_rate">
+                    <input type="number" class="form-control" v-model="employeeRate.monthly_rate">
+                </div>
+
+                <div class="form-group">
+                    <label class="col-form-label">SSS:</label>
+                    <input type="number" class="form-control" v-model="employeeRate.sss">
+                </div>
+
+                <div class="form-group">
+                    <label class="col-form-label">Pag Ibig:</label>
+                    <input type="number" class="form-control" v-model="employeeRate.pag_ibig">
+                </div>
+
+                <div class="form-group">
+                    <label class="col-form-label">Phil Health:</label>
+                    <input type="number" class="form-control" v-model="employeeRate.phil_health">
                 </div>
             </form>
         </x-modal>
@@ -47,15 +62,23 @@
                                         <th>Department</th>
                                         <th>Name</th>
                                         <th>Monthly Rate</th>
+                                        <th>Rate Perday</th>
+                                        <th>SSS</th>
+                                        <th>Pag Ibig</th>
+                                        <th>Phil Health</th>
                                         <th class="text-end">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="data in employeeRatesData" :key="data.employee.id">
-                                        <td>@{{ data.employee.id }}</td>
+                                    <tr v-for="data in employeeRatesData" :key="data.id">
+                                        <td>@{{ data.id_number }}</td>
                                         <td>@{{ data.department_id == 1 ? 'Aqua' : 'Laminin' }}</td>
-                                        <td>@{{ data.employee.name }}</td>
-                                        <td>@{{ data.monthly_rate }}</td>
+                                        <td>@{{ data.name }}</td>
+                                        <td>@{{ formatMoney(data.monthly_rate) }}</td>
+                                        <td>@{{ formatMoney(data.rate_per_day) }}</td>
+                                        <td>@{{ formatMoney(data.sss) }}</td>
+                                        <td>@{{ formatMoney(data.pag_ibig) }}</td>
+                                        <td>@{{ formatMoney(data.phil_health) }}</td>
                                         <td class="text-end" :hidden="data.status === 'paid'">
                                             <div class="actions">
                                                 <a href="javascript:;" class="btn btn-sm bg-danger-light"
@@ -66,6 +89,7 @@
                                         </td>
                                     </tr>
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -82,11 +106,12 @@
             data: {
                 employeeRatesData: [],
                 employeeRate: {
-                    employee: {
-                        id: '',
-                        name: ''
-                    },
-                    monthly_rate: ''
+                    id: '',
+                    name: '',
+                    monthly_rate: '',
+                    sss: '',
+                    pag_ibig: '',
+                    phil_health: '',
                 },
             },
             mounted() {
@@ -106,11 +131,12 @@
 
                 openEditModal(data) {
                     this.employeeRate = {
-                        employee: {
-                            id: data.employee.id,
-                            name: data.employee.name,
-                        },
+                        id: data.id,
+                        name: data.name,
                         monthly_rate: data.monthly_rate,
+                        sss: data.sss,
+                        pag_ibig: data.pag_ibig,
+                        phil_health: data.phil_health,
                     };
                     $('#payrollModal').modal('show');
                 },
@@ -125,14 +151,18 @@
                         }
                     });
 
-                    axios.post(`{{ route('update.employee.rate', '') }}/${this.employeeRate.employee.id}`, {
-                            monthly_rate: this.employeeRate.monthly_rate
+                    axios.post(`{{ route('update.employee.rate', '') }}/${this.employeeRate.id}`, {
+                            monthly_rate: this.employeeRate.monthly_rate,
+                            sss: this.employeeRate.sss,
+                            pag_ibig: this.employeeRate.pag_ibig,
+                            phil_health: this.employeeRate.phil_health,
                         })
                         .then(response => {
-                            const index = this.employeeRatesData.findIndex(leave => leave.employee.id === this
-                                .employeeRate.employee.id);
+                            const index = this.employeeRatesData.findIndex(leave => leave.id === this
+                                .employeeRate.id);
                             if (index !== -1) {
-                                this.employeeRatesData.splice(index, 1, response.data.rate);
+                                this.employeeRatesData.splice(index, 1, response
+                                    .data);
                             }
                             $('#payrollModal').modal('hide');
 
@@ -154,7 +184,29 @@
                             });
                         });
                 },
+
+                formatMoney(value) {
+                    if (!value) return '0.00';
+                    return parseFloat(value).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                },
             },
         });
     </script>
+@endpush
+
+@push('css')
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
 @endpush

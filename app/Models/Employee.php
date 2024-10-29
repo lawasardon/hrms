@@ -38,4 +38,9 @@ class Employee extends Model
     {
         return $this->hasOne(Payroll::class);
     }
+
+    public function deduction()
+    {
+        return $this->hasOne(Deduction::class);
+    }
 }

@@ -63,6 +63,7 @@
                                 class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
                                 <thead class="student-thread">
                                     <tr>
+                                        <th>Id</th>
                                         <th>Department</th>
                                         <th>Name</th>
                                         <th>Monthly Rate</th>
@@ -78,6 +79,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="data in payrollData" :id="data.id">
+                                        <td>@{{ data.employee.id_number }}</td>
                                         <td>@{{ data.department_id == 1 ? 'Aqua' : 'Laminin' }}</td>
                                         <td>@{{ data.employee.name }}</td>
                                         <td>@{{ data.monthly_rate }}</td>

@@ -17,12 +17,12 @@ class CreatePayrollTable extends Migration
             $table->id();
             $table->unsignedBigInteger('department_id')->nullable();
             $table->unsignedBigInteger('employee_id')->nullable();
-            $table->integer('monthly_rate')->nullable();
-            $table->integer('rate_perday')->nullable();
+            $table->decimal('monthly_rate',10,2)->nullable();
+            $table->decimal('rate_perday',10,2)->nullable();
             $table->string('duration')->nullable();
             $table->integer('total_working_days')->nullable();
-            $table->integer('over_time')->nullable();
-            $table->integer('salary')->nullable();
+            $table->decimal('over_time',10,2)->nullable();
+            $table->decimal('salary',10,2)->nullable();
             $table->enum('status', ['pending', 'paid', 'hold'])->nullable();
             $table->timestamps();
 
