@@ -5,10 +5,10 @@
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="page-title">Aqua Leave List Details</h3>
+                    <h3 class="page-title">Employee Rates</h3>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Aqua Leave List</li>
+                        <li class="breadcrumb-item active">Employee Rates</li>
                     </ul>
                 </div>
             </div>
@@ -17,10 +17,15 @@
         <x-modal submitMethod="updateLeaveStatus" modalId="payrollModal" title="Aqua Leave List" submitId="submitEdit"
             submitText="Save Changes">
             <form @submit.prevent="updateLeaveStatus">
-                {{-- <div class="form-group">
+                <div class="form-group" hidden>
                     <label class="col-form-label">Id:</label>
-                    <input type="text" class="form-control" v-model="employeeRate.id" disabled>
-                </div> --}}
+                    <input type="text" class="form-control" v-model="employeeRate.id">
+                </div>
+
+                <div class="form-group" hidden>
+                    <label class="col-form-label">Id:</label>
+                    <input type="text" class="form-control" v-model="employeeRate.id_number">
+                </div>
 
                 <div class="form-group">
                     <label class="col-form-label">Name:</label>
@@ -107,6 +112,7 @@
                 employeeRatesData: [],
                 employeeRate: {
                     id: '',
+                    id_number: '',
                     name: '',
                     monthly_rate: '',
                     sss: '',
@@ -132,6 +138,7 @@
                 openEditModal(data) {
                     this.employeeRate = {
                         id: data.id,
+                        id_number: data.id_number,
                         name: data.name,
                         monthly_rate: data.monthly_rate,
                         sss: data.sss,
@@ -152,6 +159,8 @@
                     });
 
                     axios.post(`{{ route('store.rate.and.deduction', '') }}/${this.employeeRate.id}`, {
+                            employee_id: this.employeeRate.id,
+                            id_number: this.employeeRate.id_number,
                             monthly_rate: this.employeeRate.monthly_rate,
                             sss: this.employeeRate.sss,
                             pag_ibig: this.employeeRate.pag_ibig,

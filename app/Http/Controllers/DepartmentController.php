@@ -35,21 +35,20 @@ class DepartmentController extends Controller
             'religion' => 'required|string|max:255',
         ]);
 
-        // Generate unique employee ID
-        $year = date('y'); // Get last two digits of the current year
+        $year = date('y');
         $lastId = Employee::where('id_number', 'like', "$year%")->max('id_number');
-        $increment = $lastId ? intval(substr($lastId, 2)) + 1 : 1; // Increment based on last ID
-        $idNumber = sprintf('%s%04d', $year, $increment); // Format ID
+        $increment = $lastId ? intval(substr($lastId, 2)) + 1 : 1;
+        $idNumber = sprintf('%s%04d', $year, $increment);
 
         $password = Str::random(10);
 
         $employee = Employee::create(array_merge($validatedData, ['id_number' => $idNumber]));
 
-        $payroll = Payroll::create([
-            'department_id' => $validatedData['department_id'],
-            'employee_id' => $employee->id,
-            'id_number' => $idNumber, // Use the generated ID number here
-        ]);
+        // $payroll = Payroll::create([
+        //     'department_id' => $validatedData['department_id'],
+        //     'employee_id' => $employee->id,
+        //     'id_number' => $idNumber,
+        // ]);
 
         $user = User::create([
             'name' => $validatedData['name'],
@@ -57,7 +56,6 @@ class DepartmentController extends Controller
             'password' => bcrypt($password),
         ]);
 
-        // Optionally, associate the user with the employee (if needed)
         $employee->user()->associate($user);
         $employee->save();
 
@@ -109,7 +107,6 @@ class DepartmentController extends Controller
             'password' => bcrypt($password),
         ]);
 
-        // Optionally, associate the user with the employee (if needed)
         $employee->user()->associate($user);
         $employee->save();
 

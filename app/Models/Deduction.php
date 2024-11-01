@@ -30,4 +30,9 @@ class Deduction extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+
+    public function employeeRate()
+    {
+        return $this->belongsTo(EmployeeRates::class);
+    }
 }

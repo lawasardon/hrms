@@ -41,6 +41,16 @@ class Employee extends Model
 
     public function deduction()
     {
-        return $this->hasOne(Deduction::class);
+        return $this->hasOne(Deduction::class, 'id_number', 'id_number');
+    }
+
+    public function employeeRate()
+    {
+        return $this->hasOne(EmployeeRates::class, 'id_number', 'id_number');
+    }
+
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class, 'id_number', 'id_number');
     }
 }

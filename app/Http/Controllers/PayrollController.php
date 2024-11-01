@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Payroll;
+use App\Models\Employee;
 use App\Models\Deduction;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use App\Models\EmployeeRates;
 
 class PayrollController extends Controller
 {
@@ -18,34 +20,46 @@ class PayrollController extends Controller
 
     public function showAllEmployeeRatesData()
     {
-        $employeeRates = Payroll::with('employee', 'deduction')->get()
+        $employeeRates = Employee::with('employeeRate', 'deduction')->get()
             ->map(function ($payroll) {
                 return [
-                    'id' => $payroll->employee->id,
-                    'id_number' => $payroll->employee->id_number,
-                    'department_id' => $payroll->employee->department_id,
-                    'name' => $payroll->employee->name,
-                    'monthly_rate' => $payroll->monthly_rate,
-                    'rate_per_day' => $payroll->rate_perday,
-                    'sss' => $payroll->deduction[0]->sss ?? null,
-                    'pag_ibig' => $payroll->deduction[0]->pag_ibig ?? null,
-                    'phil_health' => $payroll->deduction[0]->phil_health ?? null,
+                    'id' => $payroll->id,
+                    'id_number' => $payroll->id_number,
+                    'department_id' => $payroll->department_id,
+                    'name' => $payroll->name,
+                    'monthly_rate' => $payroll->employeeRate->monthly_rate ?? null,
+                    'rate_per_day' => $payroll->employeeRate->rate_perday ?? null,
+                    'sss' => $payroll->deduction->sss ?? null,
+                    'pag_ibig' => $payroll->deduction->pag_ibig ?? null,
+                    'phil_health' => $payroll->deduction->phil_health ?? null,
                 ];
             });
         return response()->json($employeeRates);
     }
 
-    public function storeRateAndDeduction(Request $request, $id)
+    public function storeRateAndDeduction(Request $request)
     {
         $validatedData = $request->validate([
             'monthly_rate' => 'nullable|numeric',
             'sss' => 'nullable|numeric',
             'pag_ibig' => 'nullable|numeric',
             'phil_health' => 'nullable|numeric',
-            'department_id' => 'nullable|integer',
+            'id_number' => 'required|integer',
+            'employee_id' => 'required|integer',
         ]);
 
-        $monthlyRate = Payroll::findOrFail($id);
+        $monthlyRate = EmployeeRates::updateOrCreate(
+            [
+                'id_number' => $validatedData['id_number'],
+                'employee_id' => $validatedData['employee_id']
+            ],
+            [
+                'monthly_rate' => $validatedData['monthly_rate'] ?? 0,
+                'sss' => $validatedData['sss'] ?? 0,
+                'pag_ibig' => $validatedData['pag_ibig'] ?? 0,
+                'phil_health' => $validatedData['phil_health'] ?? 0,
+            ]
+        );
 
         if (isset($validatedData['monthly_rate'])) {
             $monthlyRate->monthly_rate = $validatedData['monthly_rate'];
@@ -61,18 +75,14 @@ class PayrollController extends Controller
         $monthlyRate->save();
 
         $deductionData = [
-            'sss' => $validatedData['sss'],
-            'pag_ibig' => $validatedData['pag_ibig'],
-            'phil_health' => $validatedData['phil_health'],
-            'payroll_id' => $monthlyRate->id,
+            'sss' => $validatedData['sss'] ?? 0,
+            'pag_ibig' => $validatedData['pag_ibig'] ?? 0,
+            'phil_health' => $validatedData['phil_health'] ?? 0,
             'employee_id' => $monthlyRate->employee->id,
         ];
 
         Deduction::updateOrCreate(
-            [
-                'payroll_id' => $monthlyRate->id,
-                'id_number' => $monthlyRate->employee->id_number
-            ],
+            ['id_number' => $monthlyRate->employee->id_number],
             $deductionData
         );
 
@@ -102,6 +112,9 @@ class PayrollController extends Controller
         $aquaAttendance = Attendance::with([
             'payroll' => function ($query) {
                 $query->with(['deduction']);
+            },
+            'employee' => function ($query) {
+                $query->with(['employeeRate', 'deduction']);
             }
         ])
             ->where('department', 'aqua')
@@ -132,14 +145,12 @@ class PayrollController extends Controller
             $key = $idNumber . '_' . $period . '_' . $date->format('Y_m');
 
             if (!isset($summarizedData[$key])) {
-                $deduction = null;
-                if ($attendance->payroll && $attendance->payroll->deduction) {
-                    $deduction = $attendance->payroll->deduction->first();
-                }
+                $employeeRate = EmployeeRates::where('id_number', $attendance->id_number)->first();
+                $govDeduction = Deduction::where('id_number', $attendance->id_number)->first();
 
                 $totalGovDeduction = 0;
-                if ($deduction) {
-                    $totalGovDeduction = ($deduction->sss + $deduction->pag_ibig + $deduction->phil_health) / 2;
+                if ($govDeduction) {
+                    $totalGovDeduction = ($govDeduction->sss + $govDeduction->pag_ibig + $govDeduction->phil_health) / 2;
                 }
 
                 $durationString = sprintf(
@@ -168,8 +179,8 @@ class PayrollController extends Controller
                     'id_number' => $idNumber,
                     'department_id' => $attendance->department === 'aqua' ? 1 : 2,
                     'name' => $attendance->name,
-                    'monthly_rate' => $storedPayroll ? $storedPayroll->monthly_rate : 0,
-                    'rate_perday' => $storedPayroll ? $storedPayroll->rate_perday : 0,
+                    'monthly_rate' => $employeeRate ? $employeeRate->monthly_rate : 0,
+                    'rate_perday' => $employeeRate ? $employeeRate->rate_perday : 0,
                     'total_working_days' => $workingDays,
                     'over_time' => $storedPayroll && $storedPayroll->over_time ? $storedPayroll->over_time : 0,
                     'total_gov_deduction' => $totalGovDeduction,

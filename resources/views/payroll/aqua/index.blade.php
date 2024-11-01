@@ -58,7 +58,7 @@
                             <table
                                 class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
                                 <thead class="student-thread">
-                                    <tr>
+                                    <tr align="center">
                                         <th>Id</th>
                                         <th>Department</th>
                                         <th>Name</th>

@@ -26,4 +26,9 @@ class Attendance extends Model
         return $this->belongsTo(Payroll::class, 'id_number', 'id_number');
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'id_number');
+    }
+
 }
