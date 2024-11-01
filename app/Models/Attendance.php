@@ -21,10 +21,10 @@ class Attendance extends Model
         'status',
     ];
 
-    public function payroll()
-    {
-        return $this->belongsTo(Payroll::class, 'id_number', 'id_number');
-    }
+    // public function payroll()
+    // {
+    //     return $this->belongsTo(Payroll::class, 'id_number', 'id_number');
+    // }
 
     public function employee()
     {

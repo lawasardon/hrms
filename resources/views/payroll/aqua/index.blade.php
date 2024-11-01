@@ -14,9 +14,25 @@
             </div>
         </div>
 
-        <x-modal submitMethod="updateLeaveStatus" modalId="payrollModal" title="Aqua Leave List" submitId="submitEdit"
+        <x-modal submitMethod="storePayroll" modalId="payrollModal" title="Aqua Leave List" submitId="submitEdit"
             submitText="Save Changes">
             <form>
+
+                <div class="form-group">
+                    <label class="col-form-label">Id:</label>
+                    <input type="text" class="form-control" v-model="employeePayroll.employee_id" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-form-label">Id Number:</label>
+                    <input type="text" class="form-control" v-model="employeePayroll.id_number" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-form-label">Overtime Earnings:</label>
+                    <input type="text" class="form-control" v-model="employeePayroll.overtime_earnings" disabled>
+                </div>
+
 
                 <div class="form-group">
                     <label class="col-form-label">Name:</label>
@@ -120,12 +136,14 @@
             data: {
                 payrollData: [],
                 employeePayroll: {
-                    status: '',
+                    employee_id: '',
+                    id_number: '',
                     name: '',
                     salary: 0,
+                    status: '',
                     over_time: 0,
                     rate_perday: 0,
-                    original_salary: 0
+                    original_salary: 0,
                 },
 
             },
@@ -156,29 +174,33 @@
                     };
                     $('#payrollModal').modal('show');
                 },
+                // calculateSalaryWithOvertime(overtime) {
+                //     if (!overtime || overtime === 0) {
+                //         this.employeePayroll.salary = this.employeePayroll.original_salary;
+                //         return;
+                //     }
+                //     const hourlyRate = this.employeePayroll.rate_perday / 8;
+                //     const overtimeHourlyRate = hourlyRate * 1.25;
+                //     const overtimePay = overtimeHourlyRate * overtime;
+                //     this.employeePayroll.salary = Number(this.employeePayroll.original_salary) + overtimePay;
+                //     this.employeePayroll.salary = Math.round(this.employeePayroll.salary * 100) / 100;
+                // },
+
                 calculateSalaryWithOvertime(overtime) {
-                    // Reset to original salary if overtime is empty or 0
                     if (!overtime || overtime === 0) {
                         this.employeePayroll.salary = this.employeePayroll.original_salary;
+                        this.employeePayroll.overtime_earnings = 0; // Set to 0 if no overtime
                         return;
                     }
-
-                    // Calculate hourly rate (daily rate divided by 8 hours)
                     const hourlyRate = this.employeePayroll.rate_perday / 8;
-
-                    // Calculate overtime hourly rate (125% of regular hourly rate)
                     const overtimeHourlyRate = hourlyRate * 1.25;
-
-                    // Calculate total overtime pay
                     const overtimePay = overtimeHourlyRate * overtime;
-
-                    // Add overtime pay to original salary
+                    this.employeePayroll.overtime_earnings = overtimePay; // Update overtime earnings
                     this.employeePayroll.salary = Number(this.employeePayroll.original_salary) + overtimePay;
-
-                    // Round to 2 decimal places
                     this.employeePayroll.salary = Math.round(this.employeePayroll.salary * 100) / 100;
                 },
-                updateLeaveStatus() {
+
+                storePayroll() {
                     Swal.fire({
                         title: 'Processing...',
                         text: '...',
@@ -188,22 +210,20 @@
                         }
                     });
 
-                    // Create payload with the updated data
+                    // Prepare the payload to match backend validation
                     const payload = {
+                        department_id: this.employeePayroll.department_id,
+                        employee_id: this.employeePayroll.employee_id,
+                        id_number: this.employeePayroll.id_number,
                         duration: this.employeePayroll.duration,
-                        total_working_days: this.employeePayroll.total_working_days,
-                        over_time: this.employeePayroll.over_time,
                         salary: this.employeePayroll.salary,
-                        status: this.employeePayroll.status
+                        over_time: this.employeePayroll.over_time,
+                        total_deduction: this.employeePayroll.total_gov_deduction,
+                        status: this.employeePayroll.status,
                     };
 
-                    axios.post(`{{ route('aqua.update.payroll', '') }}/${this.employeePayroll.id}`, payload)
+                    axios.post('{{ route('aqua.store.payroll') }}', payload)
                         .then(response => {
-                            const index = this.payrollData.findIndex(leave => leave.id === this.employeePayroll
-                                .id);
-                            if (index !== -1) {
-                                this.payrollData.splice(index, 1, response.data.payroll);
-                            }
                             $('#payrollModal').modal('hide');
 
                             Swal.fire({
@@ -217,11 +237,22 @@
                         .catch(error => {
                             console.error('Error updating payroll status', error.response ? error.response
                                 .data : error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Failed to update payroll status. Please try again.',
-                            });
+
+                            // Display specific validation errors if available
+                            if (error.response && error.response.data.errors) {
+                                const errorMessages = Object.values(error.response.data.errors).flat();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validation Error!',
+                                    html: errorMessages.join('<br>'),
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: 'Failed to update payroll status. Please try again.',
+                                });
+                            }
                         });
                 },
                 getStatusClass(status) {

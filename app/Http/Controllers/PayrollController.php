@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Payroll;
+use App\Mail\SalaryPaid;
 use App\Models\Employee;
 use App\Models\Deduction;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use App\Models\EmployeeRates;
+use Illuminate\Support\Facades\Mail;
 
 class PayrollController extends Controller
 {
@@ -110,9 +112,6 @@ class PayrollController extends Controller
     public function aquaPayrollCalculation()
     {
         $aquaAttendance = Attendance::with([
-            'payroll' => function ($query) {
-                $query->with(['deduction']);
-            },
             'employee' => function ($query) {
                 $query->with(['employeeRate', 'deduction']);
             }
@@ -142,27 +141,30 @@ class PayrollController extends Controller
                 continue;
             }
 
+            $durationString = sprintf(
+                "%s %d - %s %d, %d",
+                $periodStart->format('F'),
+                $periodStart->day,
+                $periodEnd->format('F'),
+                $periodEnd->day,
+                $periodEnd->year
+            );
+
             $key = $idNumber . '_' . $period . '_' . $date->format('Y_m');
 
             if (!isset($summarizedData[$key])) {
                 $employeeRate = EmployeeRates::where('id_number', $attendance->id_number)->first();
                 $govDeduction = Deduction::where('id_number', $attendance->id_number)->first();
+                $employeeId = Employee::where('id_number', $attendance->id_number)->first();
+
+                $payrollStatus = Payroll::where('id_number', $attendance->id_number)
+                    ->where('duration', $durationString)
+                    ->first();
 
                 $totalGovDeduction = 0;
                 if ($govDeduction) {
                     $totalGovDeduction = ($govDeduction->sss + $govDeduction->pag_ibig + $govDeduction->phil_health) / 2;
                 }
-
-                $durationString = sprintf(
-                    "%s %d - %s %d, %d",
-                    $periodStart->format('F'),
-                    $periodStart->day,
-                    $periodEnd->format('F'),
-                    $periodEnd->day,
-                    $periodEnd->year
-                );
-
-                $storedPayroll = $attendance->payroll;
 
                 $workingDays = 0;
                 $currentDate = $periodStart->copy();
@@ -175,20 +177,20 @@ class PayrollController extends Controller
                 }
 
                 $summarizedData[$key] = [
-                    'id' => $storedPayroll ? $storedPayroll->id : null,
+                    'employee_id' => $employeeId ? $employeeId->id : null,
                     'id_number' => $idNumber,
                     'department_id' => $attendance->department === 'aqua' ? 1 : 2,
                     'name' => $attendance->name,
                     'monthly_rate' => $employeeRate ? $employeeRate->monthly_rate : 0,
                     'rate_perday' => $employeeRate ? $employeeRate->rate_perday : 0,
                     'total_working_days' => $workingDays,
-                    'over_time' => $storedPayroll && $storedPayroll->over_time ? $storedPayroll->over_time : 0,
+                    'over_time' => 0,
                     'total_gov_deduction' => $totalGovDeduction,
                     'late' => 0,
                     'loan' => 0,
-                    'salary' => $storedPayroll && $storedPayroll->salary ? $storedPayroll->salary : 0,
+                    'salary' => 0,
                     'duration' => $durationString,
-                    'status' => $storedPayroll ? $storedPayroll->status : 'pending'
+                    'status' => $payrollStatus ? $payrollStatus->status : 'pending',
                 ];
             }
 
@@ -202,63 +204,70 @@ class PayrollController extends Controller
         }
 
         foreach ($summarizedData as &$data) {
-            if (!$data['salary']) {
-                $baseSalary = $data['rate_perday'] * $data['total_working_days'];
-                $lateDeduction = $data['late'] * 10;
-                $govDeduction = $data['total_gov_deduction'];
+            $baseSalary = $data['rate_perday'] * $data['total_working_days'];
+            $lateDeduction = $data['late'] * 10;
+            $govDeduction = $data['total_gov_deduction'];
 
-                $overtimePay = 0;
-                if ($data['over_time'] > 0) {
-                    $hourlyRate = $data['rate_perday'] / 8;
-                    $overtimeRate = $hourlyRate * 1.25;
-                    $overtimePay = $overtimeRate * $data['over_time'];
-                }
-
-                $data['salary'] = round($baseSalary + $overtimePay - $lateDeduction - $govDeduction, 2);
+            $overtimePay = 0;
+            if ($data['over_time'] > 0) {
+                $hourlyRate = $data['rate_perday'] / 8;
+                $overtimeRate = $hourlyRate * 1.25;
+                $overtimePay = $overtimeRate * $data['over_time'];
             }
+
+            $data['salary'] = round($baseSalary + $overtimePay - $lateDeduction - $govDeduction, 2);
         }
 
         return response()->json(array_values($summarizedData));
     }
 
-
-    public function updateAquaPayroll(Request $request, $id)
+    public function aquaStorePayroll(Request $request)
     {
         $validatedData = $request->validate([
+            'department_id' => 'required|integer',
+            'employee_id' => 'required|integer',
+            'id_number' => 'required|integer',
             'duration' => 'nullable|string',
-            'total_working_days' => 'nullable|numeric',
+            'salary' => 'required|numeric',
             'over_time' => 'nullable|numeric',
-            'salary' => 'nullable|numeric',
-            'status' => 'nullable|string',
+            'total_deduction' => 'nullable|numeric',
+            'status' => 'required|string|in:pending,paid,hold',
         ]);
 
-        $payroll = Payroll::findOrFail($id);
+        try {
+            $hourlyRate = $request->salary / 160;
+            $overtimeEarnings = ($hourlyRate * 1.25) * ($request->over_time ?? 0);
 
-        if ($request->has('duration')) {
-            $payroll->duration = $validatedData['duration'];
+            $payroll = Payroll::updateOrCreate(
+                ['duration' => $request->duration,],
+                [
+                    'employee_id' => $request->employee_id,
+                    'department_id' => $request->department_id,
+                    'id_number' => $request->id_number,
+                    'duration' => $request->duration,
+                    'salary' => $request->salary,
+                    'total_deduction' => $request->total_deduction ?? 0,
+                    'status' => $request->status,
+                    'over_time' => $overtimeEarnings,
+                ]
+            );
+
+            $employee = Employee::findOrFail($request->employee_id);
+
+            if ($request->status === 'paid') {
+                Mail::to($employee->email)->send(new SalaryPaid($employee, $request->duration, $request->salary, $request->id_number));
+            }
+
+            return response()->json([
+                'message' => 'Updated successfully',
+                'payroll' => $payroll
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating payroll',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        if ($request->has('total_working_days')) {
-            $payroll->total_working_days = $validatedData['total_working_days'];
-        }
-
-        if ($request->has('over_time')) {
-            $payroll->over_time = $validatedData['over_time'];
-        }
-
-        if ($request->has('salary')) {
-            $payroll->salary = $validatedData['salary'];
-        }
-
-        if ($request->has('status')) {
-            $payroll->status = $validatedData['status'];
-        }
-
-        $payroll->save();
-
-        return response()->json([
-            'message' => 'Updated successfully',
-            'payroll' => $payroll
-        ], 200);
     }
+
 }

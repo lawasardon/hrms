@@ -16,12 +16,13 @@ class Payroll extends Model
             'department_id',
             'id_number',
             'employee_id',
-            'monthly_rate',
-            'rate_perday',
+            // 'monthly_rate',
+            // 'rate_perday',
             'duration',
-            'total_working_days',
+            // 'total_working_days',
             'over_time',
             'salary',
+            'total_deduction',
             'status',
         ];
 
@@ -35,8 +36,8 @@ class Payroll extends Model
         return $this->hasMany(Deduction::class);
     }
 
-    public function attendance()
-    {
-        return $this->belongsTo(Attendance::class);
-    }
+    // public function attendance()
+    // {
+    //     return $this->belongsTo(Attendance::class);
+    // }
 }

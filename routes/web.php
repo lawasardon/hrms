@@ -65,7 +65,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/aqua/payroll/data', [PayrollController::class, 'showAquaPayrollData'])->name('show.aqua.payroll.data');
         Route::get('/aqua/show/payroll/{id}', [PayrollController::class,'aquaShowEditModal'])->name('aqua.payroll.show');
         Route::get('/aqua/payroll/calculation', [PayrollController::class, 'aquaPayrollCalculation'])->name('aqua.payroll.calculation');
-        Route::post('/aqua/payroll/update/{id}', [PayrollController::class, 'updateAquaPayroll'])->name('aqua.update.payroll');
+        Route::post('/aqua/store/Payroll', [PayrollController::class, 'aquaStorePayroll'])->name('aqua.store.payroll');
 
 
     });
