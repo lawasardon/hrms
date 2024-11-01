@@ -101,7 +101,7 @@ class PayrollController extends Controller
     {
         $aquaAttendance = Attendance::with([
             'payroll' => function ($query) {
-                $query->with('deduction');
+                $query->with(['deduction']);
             }
         ])
             ->where('department', 'aqua')
@@ -123,7 +123,7 @@ class PayrollController extends Controller
                 $periodEnd = $midMonth;
             } elseif ($date->between($midMonth->addDay(), $lastDayOfMonth)) {
                 $period = 'second_half';
-                $periodStart = $midMonth->addDay();
+                $periodStart = Carbon::parse($date)->startOfMonth()->addDays(15);
                 $periodEnd = $lastDayOfMonth;
             } else {
                 continue;
@@ -143,34 +143,45 @@ class PayrollController extends Controller
                 }
 
                 $durationString = sprintf(
-                    "%s %d - %s %d",
+                    "%s %d - %s %d, %d",
                     $periodStart->format('F'),
                     $periodStart->day,
                     $periodEnd->format('F'),
-                    $periodEnd->day
+                    $periodEnd->day,
+                    $periodEnd->year
                 );
 
+                $storedPayroll = $attendance->payroll;
+
+                $workingDays = 0;
+                $currentDate = $periodStart->copy();
+
+                while ($currentDate <= $periodEnd) {
+                    if ($currentDate->isWeekday()) {
+                        $workingDays++;
+                    }
+                    $currentDate->addDay();
+                }
+
                 $summarizedData[$key] = [
-                    'id' => $attendance->payroll ? $attendance->payroll->id : null,
+                    'id' => $storedPayroll ? $storedPayroll->id : null,
                     'id_number' => $idNumber,
                     'department_id' => $attendance->department === 'aqua' ? 1 : 2,
                     'name' => $attendance->name,
-                    'monthly_rate' => $attendance->payroll ? $attendance->payroll->monthly_rate : 0,
-                    'rate_perday' => $attendance->payroll ? $attendance->payroll->rate_perday : 0,
-                    'total_working_days' => 0,
-                    'over_time' => 0,
+                    'monthly_rate' => $storedPayroll ? $storedPayroll->monthly_rate : 0,
+                    'rate_perday' => $storedPayroll ? $storedPayroll->rate_perday : 0,
+                    'total_working_days' => $workingDays,
+                    'over_time' => $storedPayroll && $storedPayroll->over_time ? $storedPayroll->over_time : 0,
                     'total_gov_deduction' => $totalGovDeduction,
                     'late' => 0,
                     'loan' => 0,
-                    'salary' => 0,
+                    'salary' => $storedPayroll && $storedPayroll->salary ? $storedPayroll->salary : 0,
                     'duration' => $durationString,
-                    'status' => 'pending'
+                    'status' => $storedPayroll ? $storedPayroll->status : 'pending'
                 ];
             }
 
             if ($date->isWeekday()) {
-                $summarizedData[$key]['total_working_days'] += 1;
-
                 if ($attendance->time_in > '08:10:00') {
                     $lateMinutes = Carbon::parse($attendance->time_in)
                         ->diffInMinutes(Carbon::createFromTimeString('08:10:00'));
@@ -180,13 +191,20 @@ class PayrollController extends Controller
         }
 
         foreach ($summarizedData as &$data) {
-            $baseSalary = $data['rate_perday'] * $data['total_working_days'];
+            if (!$data['salary']) {
+                $baseSalary = $data['rate_perday'] * $data['total_working_days'];
+                $lateDeduction = $data['late'] * 10;
+                $govDeduction = $data['total_gov_deduction'];
 
-            $lateDeduction = $data['late'] * 10;
+                $overtimePay = 0;
+                if ($data['over_time'] > 0) {
+                    $hourlyRate = $data['rate_perday'] / 8;
+                    $overtimeRate = $hourlyRate * 1.25;
+                    $overtimePay = $overtimeRate * $data['over_time'];
+                }
 
-            $govDeduction = $data['total_gov_deduction'];
-
-            $data['salary'] = round($baseSalary - $lateDeduction - $govDeduction, 2);
+                $data['salary'] = round($baseSalary + $overtimePay - $lateDeduction - $govDeduction, 2);
+            }
         }
 
         return response()->json(array_values($summarizedData));
