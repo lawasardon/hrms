@@ -17,6 +17,7 @@ class CreatePayrollTable extends Migration
             $table->id();
             $table->unsignedBigInteger('department_id')->nullable();
             $table->unsignedBigInteger('employee_id')->nullable();
+            $table->unsignedBigInteger('id_number')->nullable();
             $table->decimal('monthly_rate',10,2)->nullable();
             $table->decimal('rate_perday',10,2)->nullable();
             $table->string('duration')->nullable();
@@ -26,6 +27,7 @@ class CreatePayrollTable extends Migration
             $table->enum('status', ['pending', 'paid', 'hold'])->nullable();
             $table->timestamps();
 
+            $table->foreign('id_number')->references('id_number')->on('employee')->onDelete('cascade');
             $table->foreign('department_id')->references('id')->on('department')->onDelete('cascade');
             $table->foreign('employee_id')->references('id')->on('employee')->onDelete('cascade');
 

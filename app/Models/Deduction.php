@@ -13,6 +13,7 @@ class Deduction extends Model
 
     protected $fillable =
         [
+            'id_number',
             'employee_id',
             'payroll_id',
             'sss',

@@ -20,4 +20,10 @@ class Attendance extends Model
         'time_out',
         'status',
     ];
+
+    public function payroll()
+    {
+        return $this->belongsTo(Payroll::class, 'id_number', 'id_number');
+    }
+
 }

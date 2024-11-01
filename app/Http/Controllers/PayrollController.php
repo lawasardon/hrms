@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Payroll;
 use App\Models\Deduction;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
 
 class PayrollController extends Controller
@@ -33,7 +35,7 @@ class PayrollController extends Controller
         return response()->json($employeeRates);
     }
 
-    public function updateAquaPayroll(Request $request, $id)
+    public function storeRateAndDeduction(Request $request, $id)
     {
         $validatedData = $request->validate([
             'monthly_rate' => 'nullable|numeric',
@@ -67,7 +69,10 @@ class PayrollController extends Controller
         ];
 
         Deduction::updateOrCreate(
-            ['payroll_id' => $monthlyRate->id],
+            [
+                'payroll_id' => $monthlyRate->id,
+                'id_number' => $monthlyRate->employee->id_number
+            ],
             $deductionData
         );
 
@@ -92,6 +97,139 @@ class PayrollController extends Controller
         return response()->json($aquaPayroll);
     }
 
+    public function aquaPayrollCalculation()
+    {
+        $aquaAttendance = Attendance::with([
+            'payroll' => function ($query) {
+                $query->with('deduction');
+            }
+        ])
+            ->where('department', 'aqua')
+            ->get();
+
+        $summarizedData = [];
+
+        foreach ($aquaAttendance as $attendance) {
+            $idNumber = $attendance->id_number;
+            $date = Carbon::parse($attendance->date);
+
+            $firstDayOfMonth = $date->copy()->startOfMonth();
+            $lastDayOfMonth = $date->copy()->endOfMonth();
+            $midMonth = $date->copy()->startOfMonth()->addDays(14);
+
+            if ($date->between($firstDayOfMonth, $midMonth)) {
+                $period = 'first_half';
+                $periodStart = $firstDayOfMonth;
+                $periodEnd = $midMonth;
+            } elseif ($date->between($midMonth->addDay(), $lastDayOfMonth)) {
+                $period = 'second_half';
+                $periodStart = $midMonth->addDay();
+                $periodEnd = $lastDayOfMonth;
+            } else {
+                continue;
+            }
+
+            $key = $idNumber . '_' . $period . '_' . $date->format('Y_m');
+
+            if (!isset($summarizedData[$key])) {
+                $deduction = null;
+                if ($attendance->payroll && $attendance->payroll->deduction) {
+                    $deduction = $attendance->payroll->deduction->first();
+                }
+
+                $totalGovDeduction = 0;
+                if ($deduction) {
+                    $totalGovDeduction = ($deduction->sss + $deduction->pag_ibig + $deduction->phil_health) / 2;
+                }
+
+                $durationString = sprintf(
+                    "%s %d - %s %d",
+                    $periodStart->format('F'),
+                    $periodStart->day,
+                    $periodEnd->format('F'),
+                    $periodEnd->day
+                );
+
+                $summarizedData[$key] = [
+                    'id' => $attendance->payroll ? $attendance->payroll->id : null,
+                    'id_number' => $idNumber,
+                    'department_id' => $attendance->department === 'aqua' ? 1 : 2,
+                    'name' => $attendance->name,
+                    'monthly_rate' => $attendance->payroll ? $attendance->payroll->monthly_rate : 0,
+                    'rate_perday' => $attendance->payroll ? $attendance->payroll->rate_perday : 0,
+                    'total_working_days' => 0,
+                    'over_time' => 0,
+                    'total_gov_deduction' => $totalGovDeduction,
+                    'late' => 0,
+                    'loan' => 0,
+                    'salary' => 0,
+                    'duration' => $durationString,
+                    'status' => 'pending'
+                ];
+            }
+
+            if ($date->isWeekday()) {
+                $summarizedData[$key]['total_working_days'] += 1;
+
+                if ($attendance->time_in > '08:10:00') {
+                    $lateMinutes = Carbon::parse($attendance->time_in)
+                        ->diffInMinutes(Carbon::createFromTimeString('08:10:00'));
+                    $summarizedData[$key]['late'] += $lateMinutes;
+                }
+            }
+        }
+
+        foreach ($summarizedData as &$data) {
+            $baseSalary = $data['rate_perday'] * $data['total_working_days'];
+
+            $lateDeduction = $data['late'] * 10;
+
+            $govDeduction = $data['total_gov_deduction'];
+
+            $data['salary'] = round($baseSalary - $lateDeduction - $govDeduction, 2);
+        }
+
+        return response()->json(array_values($summarizedData));
+    }
 
 
+    public function updateAquaPayroll(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'duration' => 'nullable|string',
+            'total_working_days' => 'nullable|numeric',
+            'over_time' => 'nullable|numeric',
+            'salary' => 'nullable|numeric',
+            'status' => 'nullable|string',
+        ]);
+
+        $payroll = Payroll::findOrFail($id);
+
+        if ($request->has('duration')) {
+            $payroll->duration = $validatedData['duration'];
+        }
+
+        if ($request->has('total_working_days')) {
+            $payroll->total_working_days = $validatedData['total_working_days'];
+        }
+
+        if ($request->has('over_time')) {
+            $payroll->over_time = $validatedData['over_time'];
+        }
+
+        if ($request->has('salary')) {
+            $payroll->salary = $validatedData['salary'];
+        }
+
+        if ($request->has('status')) {
+            $payroll->status = $validatedData['status'];
+        }
+
+        $payroll->save();
+
+        return response()->json([
+            'message' => 'Updated successfully',
+            'payroll' => $payroll
+        ], 200);
+    }
 }

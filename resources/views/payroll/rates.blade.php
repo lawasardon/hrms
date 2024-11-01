@@ -151,7 +151,7 @@
                         }
                     });
 
-                    axios.post(`{{ route('update.employee.rate', '') }}/${this.employeeRate.id}`, {
+                    axios.post(`{{ route('store.rate.and.deduction', '') }}/${this.employeeRate.id}`, {
                             monthly_rate: this.employeeRate.monthly_rate,
                             sss: this.employeeRate.sss,
                             pag_ibig: this.employeeRate.pag_ibig,

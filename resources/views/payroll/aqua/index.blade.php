@@ -17,19 +17,10 @@
         <x-modal submitMethod="updateLeaveStatus" modalId="payrollModal" title="Aqua Leave List" submitId="submitEdit"
             submitText="Save Changes">
             <form>
-                {{-- <div class="form-group">
-                    <label class="col-form-label">Date Filed:</label>
-                    <input type="text" class="form-control" v-model="employeePayroll.department_id" disabled>
-                </div> --}}
 
                 <div class="form-group">
                     <label class="col-form-label">Name:</label>
-                    <input type="text" class="form-control" v-model="employeePayroll.employee.name" disabled>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-form-label">Monthly Rate:</label>
-                    <input type="text" class="form-control" v-model="employeePayroll.monthly_rate" disabled>
+                    <input type="text" class="form-control" v-model="employeePayroll.name" disabled>
                 </div>
 
                 <div class="form-group">
@@ -38,8 +29,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-form-label">Salary:</label>
-                    <input type="text" class="form-control" v-model="employeePayroll.salary" disabled>
+                    <label class="col-form-label">Hours Overtime:</label>
+                    <input type="number" class="form-control" v-model="employeePayroll.over_time">
                 </div>
 
                 <div class="form-group">
@@ -50,6 +41,11 @@
                         <option value="paid">Paid</option>
                         <option value="hold">hold</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-form-label">Salary:</label>
+                    <input type="text" class="form-control" v-model="employeePayroll.salary" disabled>
                 </div>
             </form>
         </x-modal>
@@ -70,8 +66,10 @@
                                         <th>Rate Perday</th>
                                         <th>Duration</th>
                                         <th>Working Days</th>
+                                        <th>Hours Overtime</th>
+                                        <th>Government Deduction</th>
                                         <th>Late</th>
-                                        <th>Overtime</th>
+                                        <th>Loan</th>
                                         <th>Salary</th>
                                         <th>Status</th>
                                         <th class="text-end">Action</th>
@@ -79,15 +77,17 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="data in payrollData" :id="data.id">
-                                        <td>@{{ data.employee.id_number }}</td>
+                                        <td>@{{ data.id_number }}</td>
                                         <td>@{{ data.department_id == 1 ? 'Aqua' : 'Laminin' }}</td>
-                                        <td>@{{ data.employee.name }}</td>
+                                        <td>@{{ data.name }}</td>
                                         <td>@{{ data.monthly_rate }}</td>
                                         <td>@{{ data.rate_perday }}</td>
-                                        <td>@{{ formatDate(data.duration) }}</td>
+                                        <td>@{{ data.duration }}</td>
                                         <td>@{{ data.total_working_days }}</td>
-                                        <td>@{{ data.late }}</td>
                                         <td>@{{ data.over_time }}</td>
+                                        <td>@{{ data.total_gov_deduction }}</td>
+                                        <td>@{{ data.late }}</td>
+                                        <td>@{{ data.loan }}</td>
                                         <td>@{{ data.salary }}</td>
                                         <td>
                                             <span :class="getStatusClass(data.status)">
@@ -120,20 +120,26 @@
             data: {
                 payrollData: [],
                 employeePayroll: {
-                    department_id: '',
                     status: '',
-                    employee: {
-                        name: '',
-                    },
+                    name: '',
+                    salary: 0,
+                    over_time: 0,
+                    rate_perday: 0,
+                    original_salary: 0
                 },
 
             },
             mounted() {
                 this.allAquaPayroll();
             },
+            watch: {
+                'employeePayroll.over_time': function(newValue) {
+                    this.calculateSalaryWithOvertime(newValue);
+                }
+            },
             methods: {
                 allAquaPayroll() {
-                    axios.get("{{ route('show.aqua.payroll.data') }}")
+                    axios.get("{{ route('aqua.payroll.calculation') }}")
                         .then(response => {
                             this.payrollData = response.data;
                         })
@@ -145,8 +151,32 @@
                 openEditModal(data) {
                     this.employeePayroll = {
                         ...data,
+                        original_salary: data.salary,
+                        over_time: data.over_time || 0
                     };
                     $('#payrollModal').modal('show');
+                },
+                calculateSalaryWithOvertime(overtime) {
+                    // Reset to original salary if overtime is empty or 0
+                    if (!overtime || overtime === 0) {
+                        this.employeePayroll.salary = this.employeePayroll.original_salary;
+                        return;
+                    }
+
+                    // Calculate hourly rate (daily rate divided by 8 hours)
+                    const hourlyRate = this.employeePayroll.rate_perday / 8;
+
+                    // Calculate overtime hourly rate (125% of regular hourly rate)
+                    const overtimeHourlyRate = hourlyRate * 1.25;
+
+                    // Calculate total overtime pay
+                    const overtimePay = overtimeHourlyRate * overtime;
+
+                    // Add overtime pay to original salary
+                    this.employeePayroll.salary = Number(this.employeePayroll.original_salary) + overtimePay;
+
+                    // Round to 2 decimal places
+                    this.employeePayroll.salary = Math.round(this.employeePayroll.salary * 100) / 100;
                 },
                 updateLeaveStatus() {
                     Swal.fire({
@@ -158,27 +188,35 @@
                         }
                     });
 
-                    axios.post(`{{ route('aqua.update.payroll', '') }}/${this.employeePayroll.id}`)
+                    // Create payload with the updated data
+                    const payload = {
+                        duration: this.employeePayroll.duration,
+                        total_working_days: this.employeePayroll.total_working_days,
+                        over_time: this.employeePayroll.over_time,
+                        salary: this.employeePayroll.salary,
+                        status: this.employeePayroll.status
+                    };
+
+                    axios.post(`{{ route('aqua.update.payroll', '') }}/${this.employeePayroll.id}`, payload)
                         .then(response => {
                             const index = this.payrollData.findIndex(leave => leave.id === this.employeePayroll
                                 .id);
                             if (index !== -1) {
-                                this.payrollData.splice(index, 1, response.data.employee);
+                                this.payrollData.splice(index, 1, response.data.payroll);
                             }
                             $('#payrollModal').modal('hide');
 
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success!',
-                                text: '...',
+                                text: 'Payroll updated successfully',
                             });
 
                             this.allAquaPayroll();
                         })
                         .catch(error => {
                             console.error('Error updating payroll status', error.response ? error.response
-                                .data :
-                                error);
+                                .data : error);
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error!',
@@ -209,4 +247,18 @@
             },
         });
     </script>
+@endpush
+
+@push('css')
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
 @endpush

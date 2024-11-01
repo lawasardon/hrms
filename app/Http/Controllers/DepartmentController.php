@@ -48,6 +48,7 @@ class DepartmentController extends Controller
         $payroll = Payroll::create([
             'department_id' => $validatedData['department_id'],
             'employee_id' => $employee->id,
+            'id_number' => $idNumber, // Use the generated ID number here
         ]);
 
         $user = User::create([

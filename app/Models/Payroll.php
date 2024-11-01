@@ -14,6 +14,7 @@ class Payroll extends Model
     protected $fillable =
         [
             'department_id',
+            'id_number',
             'employee_id',
             'monthly_rate',
             'rate_perday',
@@ -32,5 +33,10 @@ class Payroll extends Model
     public function deduction()
     {
         return $this->hasMany(Deduction::class);
+    }
+
+    public function attendance()
+    {
+        return $this->belongsTo(Attendance::class);
     }
 }
