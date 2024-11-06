@@ -166,15 +166,19 @@ class PayrollController extends Controller
                     $totalGovDeduction = ($govDeduction->sss + $govDeduction->pag_ibig + $govDeduction->phil_health) / 2;
                 }
 
-                $workingDays = 0;
-                $currentDate = $periodStart->copy();
+                $workingDays = Attendance::where('id_number', $attendance->id_number)
+                    ->whereBetween('date', [$periodStart->format('Y-m-d'), $periodEnd->format('Y-m-d')])
+                    ->count();
 
-                while ($currentDate <= $periodEnd) {
-                    if ($currentDate->isWeekday()) {
-                        $workingDays++;
-                    }
-                    $currentDate->addDay();
-                }
+                // $workingDays = 0;
+                // $currentDate = $periodStart->copy();
+
+                // while ($currentDate <= $periodEnd) {
+                //     if ($currentDate->isWeekday()) {
+                //         $workingDays++;
+                //     }
+                //     $currentDate->addDay();
+                // }
 
                 $summarizedData[$key] = [
                     'employee_id' => $employeeId ? $employeeId->id : null,
