@@ -67,6 +67,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/aqua/payroll/calculation', [PayrollController::class, 'aquaPayrollCalculation'])->name('aqua.payroll.calculation');
         Route::post('/aqua/store/Payroll', [PayrollController::class, 'aquaStorePayroll'])->name('aqua.store.payroll');
 
+        Route::get('/laminin/payroll', [PayrollController::class, 'showLamininPayroll'])->name('show.laminin.payroll');
+        Route::get('/laminin/payroll/data', [PayrollController::class, 'showLamininPayrollData'])->name('show.laminin.payroll.data');
+        Route::get('/laminin/show/payroll/{id}', [PayrollController::class,'lamininShowEditModal'])->name('laminin.payroll.show');
+        Route::get('/laminin/payroll/calculation', [PayrollController::class, 'lamininPayrollCalculation'])->name('laminin.payroll.calculation');
+        Route::post('/laminin/store/Payroll', [PayrollController::class, 'lamininStorePayroll'])->name('laminin.store.payroll');
+
 
     });
 

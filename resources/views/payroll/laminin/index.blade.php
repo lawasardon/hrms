@@ -1,20 +1,20 @@
 @extends('layouts.main')
 
 @section('content')
-    <div class="content container-fluid" id="aquaPayroll">
+    <div class="content container-fluid" id="lamininPayroll">
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="page-title">Aqua Payroll Details</h3>
+                    <h3 class="page-title">Laminin Payroll Details</h3>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Aqua Payroll Details</li>
+                        <li class="breadcrumb-item active">Laminin Payroll Details</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <x-modal submitMethod="storePayroll" modalId="payrollModal" title="Aqua Payroll Details" submitId="submitEdit"
+        <x-modal submitMethod="storePayroll" modalId="payrollModal" title="Laminin Payroll Details" submitId="submitEdit"
             submitText="Save Changes">
             <form>
 
@@ -132,7 +132,7 @@
 @push('js')
     <script>
         new Vue({
-            el: '#aquaPayroll',
+            el: '#lamininPayroll',
             data: {
                 payrollData: [],
                 employeePayroll: {
@@ -148,7 +148,7 @@
 
             },
             mounted() {
-                this.allAquaPayroll();
+                this.allLamininPayroll();
             },
             watch: {
                 'employeePayroll.over_time': function(newValue) {
@@ -156,8 +156,8 @@
                 }
             },
             methods: {
-                allAquaPayroll() {
-                    axios.get("{{ route('aqua.payroll.calculation') }}")
+                allLamininPayroll() {
+                    axios.get("{{ route('laminin.payroll.calculation') }}")
                         .then(response => {
                             this.payrollData = response.data;
                         })
@@ -222,7 +222,7 @@
                         status: this.employeePayroll.status,
                     };
 
-                    axios.post('{{ route('aqua.store.payroll') }}', payload)
+                    axios.post('{{ route('laminin.store.payroll') }}', payload)
                         .then(response => {
                             $('#payrollModal').modal('hide');
 
@@ -232,7 +232,7 @@
                                 text: 'Payroll updated successfully',
                             });
 
-                            this.allAquaPayroll();
+                            this.allLamininPayroll();
                         })
                         .catch(error => {
                             console.error('Error updating payroll status', error.response ? error.response

@@ -97,9 +97,14 @@ class DepartmentController extends Controller
             'religion' => 'required|string|max:255',
         ]);
 
+        $year = date('y');
+        $lastId = Employee::where('id_number', 'like', "$year%")->max('id_number');
+        $increment = $lastId ? intval(substr($lastId, 2)) + 1 : 1;
+        $idNumber = sprintf('%s%04d', $year, $increment);
+
         $password = Str::random(10);
 
-        $employee = Employee::create($validatedData);
+        $employee = Employee::create(array_merge($validatedData, ['id_number' => $idNumber]));
 
         $user = User::create([
             'name' => $validatedData['name'],
@@ -112,7 +117,7 @@ class DepartmentController extends Controller
 
         $user->assignRole('employee');
 
-        Mail::to($validatedData['email'])->send(new EmployeeAccountCreated($employee, $password));
+        Mail::to($validatedData['email'])->send(new EmployeeAccountCreated($employee, $password, $idNumber));
 
         return response()->json(['message' => 'Employee added successfully', 'employee' => $employee], 201);
     }

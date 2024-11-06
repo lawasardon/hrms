@@ -73,7 +73,7 @@
                                         <th>Time In</th>
                                         <th>Time Out</th>
                                         <th>Status</th>
-                                        <th class="text-end">Action</th>
+                                        {{-- <th class="text-end">Action</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -92,11 +92,11 @@
                                         <td>@{{ data.time_in }}</td>
                                         <td>@{{ data.time_out }}</td>
                                         <td>
-                                            <span :class="getAttendanceStatus(data.attendance_status)">
-                                                @{{ data.attendance_status }}
+                                            <span :class="getAttendanceStatus(data.status)">
+                                                @{{ data.status }}
                                             </span>
                                         </td>
-                                        <td class="text-end">
+                                        {{-- <td class="text-end">
                                             <div class="actions">
                                                 <a href="javascript:;" class="btn btn-sm bg-success-light me-2">
                                                     <i class="feather-eye"></i>
@@ -105,7 +105,7 @@
                                                     <i class="feather-edit"></i>
                                                 </a>
                                             </div>
-                                        </td>
+                                        </td> --}}
                                     </tr>
                                 </tbody>
                             </table>
